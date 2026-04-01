@@ -1,0 +1,6 @@
+{
+    "require": {
+        "symfony/orm-pack": "^2.7",
+        "nelmio/cors-bundle": "^2.6"
+    }
+}

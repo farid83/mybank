@@ -1,0 +1,67 @@
+version: '3.9'
+
+services:
+  # ---------------------------------------------------------------------------
+  # --- Service 1 : Frontend React
+  # ---------------------------------------------------------------------------
+  frontend:
+    build: 
+      context: ./frontend  # Docker va chercher le Dockerfile dans ce dossier
+
+    ports: 
+      - "3000:80"         # Port de votre machine : port dans le conteneur 
+                            # --> http://localhost:3000 --> port 80 de ngnix
+    depends_on: 
+      - backend           # le frontend démarre après le backend
+    networks: 
+      - mybank-net        # rejoins le réseau interne
+
+  # ---------------------------------------------------------------------------
+  # --- Service 2 : Backend Symfony
+  # ---------------------------------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8000:9000"
+    environment:
+      # Variable d'environnement que Symfony lit pour se connecter à MySql
+      DATABASE_URL:  "pgsql://anjtech:RPtEwka3q8rX2l3wVqwk@db:5432/mybank"
+      APP_ENV: dev
+    depends_on: 
+      db: 
+        condition: service_healthy      # attend que Pgsql soit vraiment prêt
+    volumes: 
+      - ./backend:/var/www/html         # votre code local --> visible dans le conteneur
+    networks:
+      - mybank-net
+  # ---------------------------------------------------------------------------
+  # --- Service 3 : Base de données PostgreSQL
+  # ---------------------------------------------------------------------------
+  db:
+    image: postgres:15-alpine    # image officielle de PostgreSQL version 15, variante alpine (légère)
+    environment:
+      POSTGRES_USER: anjtech
+      POSTGRES_PASSWORD: RPtEwka3q8rX2l3wVqwk
+      POSTGRES_DB: mybank
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - mybank-net
+    healthcheck:                # Docker attend que PGSql répond vraiment avant de démarrer le backend
+      test: ["CMD-SHELL", "pg_isready -U anjtech -d mybank"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+# ---------------------------------------------------------------------------
+# --- Réseau et volumes nommées (les données survivent aux rédémarrages)
+# ---------------------------------------------------------------------------
+volumes:
+  db_data:
+
+#--- Réseau interne (les services se voient entre eux)
+networks:
+  mybank-net:
+    driver: bridge
