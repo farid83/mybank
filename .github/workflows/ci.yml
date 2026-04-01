@@ -30,6 +30,7 @@ jobs:
       # ETAPE 3 : Installer les dépendances Javascript  
       - name: Installation dépendances frontend
         run: npm ci         # 'ci'= install propre depuis package-lock.json
+        working-directory: frontend
 
       # ETAPE 4 : Vérifier compilation React
       - name: Build React
