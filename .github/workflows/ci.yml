@@ -1,0 +1,52 @@
+# --- Nom du workflow (visible dans l'interface Github Actions)
+name: CI MyBank
+
+# --- Evenements qui déclenchent ce workflow 
+on: 
+  push: 
+    branches: [ main, develop ]       # Déclenche chaque push sur ces branches
+  pull_request: 
+    branches: [ main, develop ]       # Déclenche chaque pull request vers ces branches
+
+# --- Jobs du workflow (ici un seul)
+jobs: 
+  ci:                     # Nom interne du job (arbitraires)
+    runs-on: ubuntu-latest # Machine virtuelle Github (Ubuntu 24.04)
+
+    steps:
+      # ETAPE 1 : Récupérer le code source
+      - name: Checkout du code
+        uses: actions/checkout@v4
+        # Action officielle Github qui con votre dépôt sur le runner
+
+      # ETAPE 2 : Installer Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'      # Cache npm pour acélérer les runs suivants
+          cache-dependency-path: 'frontend/package-lock.json'
+
+      # ETAPE 3 : Installer les dépendances Javascript  
+      - name: Installation dépendances frontend
+        run: npm ci         # 'ci'= install propre depuis package-lock.json
+
+      # ETAPE 4 : Vérifier compilation React
+      - name: Build React
+        run: npm run build
+        working-directory: frontend
+
+      # ETAPE 5 : Vérifier la qualité du code
+      - name: Lint ESLint
+        run: npm run lint
+        working-directory: frontend 
+        # Si une règle ESLint est violée, le pipeline s'arrête ici en rouge
+
+      # ETAPE 6 : Exécuter les tests Vitest
+      - name: Tests unitaires
+        run: npm run test -- --reporter=verbose
+        working-directory: frontend
+
+        # '--watchAll=false' : pas de mode interactif (nécessaire en CI)
+        # '--ci': le test échoue si un snapshot est obsolète
+        # 'npm test' : lance les tests définis dans package.json
