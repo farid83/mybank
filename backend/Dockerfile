@@ -16,8 +16,8 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html 
 COPY . . 
  
-RUN composer install --no-dev --optimize-autoloader 
+RUN php -d memory_limit=-1 /usr/bin/composer install --no-dev --optimize-autoloader --no-scripts
 # ↑ '--no-dev' : n'installe pas les outils de développement (plus léger en prod) 
  
 EXPOSE 9000 
-CMD ["php", "-S", "0.0.0.0:9000", "-t", "skeleton/public"] 
+CMD ["php", "-S", "0.0.0.0:9000", "-t", "public"] 

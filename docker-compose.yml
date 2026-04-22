@@ -26,7 +26,7 @@ services:
       - "8000:9000"
     environment:
       # Variable d'environnement que Symfony lit pour se connecter à MySql
-      DATABASE_URL:  "pgsql://anjtech:RPtEwka3q8rX2l3wVqwk@db:5432/mybank"
+      DATABASE_URL:  "postgresql://anjtech:RPtEwka3q8rX2l3wVqwk@db:5432/mybank?serverVersion=15.0.0"
       APP_ENV: dev
     depends_on: 
       db: 
