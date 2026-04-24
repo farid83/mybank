@@ -4,7 +4,7 @@ name: CI MyBank
 # --- Evenements qui déclenchent ce workflow 
 on: 
   push: 
-    branches: [ main, develop ]       # Déclenche chaque push sur ces branches
+    branches: [ main, develop, 'feat/*', 'fix/*', 'test/*' ]       # Déclenche chaque push sur ces branches
   pull_request: 
     branches: [ main, develop ]       # Déclenche chaque pull request vers ces branches
 
