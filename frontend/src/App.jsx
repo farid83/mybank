@@ -1,12 +1,15 @@
-import Login from './components/Login/Login.jsx'
+import { useState } from 'react';
+import Login from './components/Login/Login.jsx';
+import Dashboard from './components/Dashboard/Dashboard.jsx';
 
 function App() {
-  const handleLogin = () => {
-    console.log('User logged in successfully');
-    // TODO: Navigate to dashboard or main app
-  };
+  const [loggedIn, setLoggedIn] = useState(false);
 
-  return <Login onLogin={handleLogin} />
+  return loggedIn ? (
+    <Dashboard onLogout={() => setLoggedIn(false)} />
+  ) : (
+    <Login onLogin={() => setLoggedIn(true)} />
+  );
 }
 
-export default App
+export default App;
