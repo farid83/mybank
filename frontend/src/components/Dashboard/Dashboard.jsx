@@ -495,7 +495,7 @@ const DashboardScreen = ({ expenses, categories, setScreen, setEditExpense, isMo
           <p style={{ fontSize: 12, color: T.gray, marginBottom: 20 }}>Spending distribution</p>
           {catData.length === 0 ? <Empty label="No data yet" /> : (
             <>
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 160, marginBottom: 20, alignItems: 'flex-end', justifyContent: 'space-around' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 160, marginBottom: 20, justifyContent: 'space-around' }}>
                 {catData.map((d, i) => {
                   const maxValue = Math.max(...catData.map(x => x.value));
                   const height = (d.value / maxValue) * 140;
@@ -651,7 +651,7 @@ const ExpensesScreen = ({ expenses, categories, setExpenses, setScreen, setEditE
   );
 };
 
-const AddExpenseScreen = ({ editExpense, expenses, setExpenses, categories, setScreen, showToast, isMobile }) => {
+const AddExpenseScreen = ({ editExpense, setExpenses, categories, setScreen, showToast, isMobile }) => {
   const isEdit = !!editExpense;
   const [label, setLabel] = useState(editExpense?.label || '');
   const [amount, setAmount] = useState(editExpense?.amount || '');
