@@ -158,7 +158,7 @@ const Icon = ({ name, size = 20, color = "currentColor", strokeWidth = 2 }) => (
 );
 
 // ─── LOGIN SCREEN ────────────────────────────────────────────────────────────
-export default function Login({ onLogin }) {
+export default function Login({ onLogin, onSwitchToRegister }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
@@ -268,7 +268,7 @@ export default function Login({ onLogin }) {
             </div>
 
             <p style={{ textAlign: "center", marginTop: 28, color: T.gray, fontSize: 13 }}>
-              Don't have an account? <span style={{ color: T.mint, fontWeight: 700, cursor: "pointer" }}>Sign up</span>
+              Don't have an account? <span onClick={onSwitchToRegister} style={{ color: T.mint, fontWeight: 700, cursor: "pointer" }}>Sign up</span>
             </p>
           </div>
         </div>
