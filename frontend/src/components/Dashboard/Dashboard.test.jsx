@@ -271,7 +271,7 @@ describe('Dashboard Component', () => {
 
     // On cherche tous les boutons et on prend l'un des derniers qui correspond à une icône (poubellle)
     const allButtons = screen.getAllByRole('button');
-    const deleteButtons = allButtons.filter(btn => btn.querySelector('svg'));
+    // const deleteButtons = allButtons.filter(btn => btn.querySelector('svg'));
     
     // Le bouton de suppression est dans la liste des dépenses
     // On peut aussi chercher par le texte de la dépense puis remonter
