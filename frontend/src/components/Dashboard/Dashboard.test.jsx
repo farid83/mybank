@@ -270,7 +270,7 @@ describe('Dashboard Component', () => {
     fireEvent.click(screen.getAllByText('Expenses')[0]);
 
     // On cherche tous les boutons et on prend l'un des derniers qui correspond à une icône (poubellle)
-    const allButtons = screen.getAllByRole('button');
+    // const allButtons = screen.getAllByRole('button');
     // const deleteButtons = allButtons.filter(btn => btn.querySelector('svg'));
     
     // Le bouton de suppression est dans la liste des dépenses
