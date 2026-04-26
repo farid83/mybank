@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "wording": "Lunch at Café",
+    "amount": "14.50",
+    "date": "2025-04-22T12:00:00Z",
+    "category": { "id": 1, "title": "Food & Drinks", "color": "#00C49A" }
+  },
+  {
+    "id": 2,
+    "wording": "Metro monthly pass",
+    "amount": "86.40",
+    "date": "2025-04-20T09:00:00Z",
+    "category": { "id": 2, "title": "Transport", "color": "#156064" }
+  }
+]
