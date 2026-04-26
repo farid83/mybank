@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { api } from '../../services/api';
 
 // ─── THEME ────────────────────────────────────────────────────────────────────
 const T = {
@@ -68,10 +69,10 @@ const globalStyle = `
 
 // ─── SEED DATA ────────────────────────────────────────────────────────────────
 const SEED_CATEGORIES = [
-  { id: 1, title: 'Food & Drinks',  color: T.mint   },
+  { id: 1, title: 'Alimentation',  color: T.mint   },
   { id: 2, title: 'Transport',      color: T.teal   },
-  { id: 3, title: 'Entertainment',  color: T.yellow },
-  { id: 4, title: 'Health',         color: '#FF8FAB'},
+  { id: 3, title: 'Loisirs',        color: T.yellow },
+  { id: 4, title: 'Santé',          color: '#FF8FAB'},
   { id: 5, title: 'Shopping',       color: '#A78BFA'},
 ];
 
@@ -344,7 +345,7 @@ const Sidebar = ({ screen, setScreen, onLogout }) => {
           onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.5)'; }}
         >
           <Icon name="logout" size={18} color="currentColor" />
-          {!collapsed && 'Log out'}
+          {!collapsed && 'Logout'}
         </button>
       </div>
     </aside>
@@ -535,7 +536,7 @@ const DashboardScreen = ({ expenses, categories, setScreen, setEditExpense, isMo
   );
 };
 
-const ExpensesScreen = ({ expenses, categories, setExpenses, setScreen, setEditExpense, isMobile }) => {
+const ExpensesScreen = ({ expenses, categories, setExpenses, setScreen, setEditExpense, showToast, isMobile }) => {
   const [search, setSearch] = useState('');
   const [filterCat, setFilterCat] = useState('');
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -546,10 +547,16 @@ const ExpensesScreen = ({ expenses, categories, setExpenses, setScreen, setEditE
     .filter(e => filterCat ? e.categoryId === +filterCat : true)
     .sort((a, b) => new Date(b.date) - new Date(a.date));
 
-  const handleDelete = (exp) => {
-    setExpenses(prev => prev.filter(e => e.id !== exp.id));
-    setDeleteTarget(null);
-    setKey(k => k + 1);
+  const handleDelete = async (exp) => {
+    try {
+      await api.deleteOperation(exp.id);
+      setExpenses(prev => prev.filter(e => e.id !== exp.id));
+      setDeleteTarget(null);
+      setKey(k => k + 1);
+      showToast('Expense deleted', 'success');
+    } catch (err) {
+      showToast('Failed to delete expense', 'error');
+    }
   };
 
   return (
@@ -670,16 +677,44 @@ const AddExpenseScreen = ({ editExpense, setExpenses, categories, setScreen, sho
     return Object.keys(e).length === 0;
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!validate()) return;
     setSaving(true);
-    setTimeout(() => {
-      const entry = { id: editExpense?.id || genId(), label: label.trim(), amount: +amount, date, categoryId: +catId };
-      setExpenses(prev => isEdit ? prev.map(e => e.id === entry.id ? entry : e) : [entry, ...prev]);
-      setSaving(false);
+    try {
+      const payload = {
+        wording: label.trim(),
+        amount: parseFloat(amount),
+        date: date,
+        categoryId: parseInt(catId)
+      };
+
+      let result;
+      if (isEdit) {
+        result = await api.updateOperation(editExpense.id, payload);
+      } else {
+        result = await api.createOperation(payload);
+      }
+
+      const transformedResult = {
+        id: result.id,
+        label: result.wording,
+        amount: parseFloat(result.amount),
+        date: result.date.split('T')[0],
+        categoryId: result.category.id
+      };
+
+      setExpenses(prev => isEdit 
+        ? prev.map(e => e.id === transformedResult.id ? transformedResult : e) 
+        : [transformedResult, ...prev]
+      );
+      
       showToast(isEdit ? 'Expense updated!' : 'Expense added!', 'success');
       setScreen('expenses');
-    }, 600);
+    } catch (err) {
+      showToast(err.message || "Failed to save expense", "error");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -752,12 +787,18 @@ const CategoriesScreen = ({ categories, setCategories, expenses, showToast, isMo
 
   const expCount = (id) => expenses.filter(e => e.categoryId === id).length;
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!newTitle.trim()) { setError('Category name is required.'); return; }
     if (categories.find(c => c.title.toLowerCase() === newTitle.trim().toLowerCase())) { setError('Category already exists.'); return; }
-    setCategories(prev => [...prev, { id: genId(), title: newTitle.trim(), color: newColor }]);
-    setNewTitle(''); setError('');
-    showToast('Category added!', 'success');
+    
+    try {
+      const result = await api.createCategory(newTitle.trim());
+      setCategories(prev => [...prev, result]);
+      setNewTitle(''); setError('');
+      showToast('Category added!', 'success');
+    } catch (err) {
+      showToast('Failed to add category', 'error');
+    }
   };
 
   const handleUpdate = (cat) => {
@@ -882,12 +923,45 @@ const TopBar = ({ screen, onLogout }) => {
 
 export default function Dashboard({ onLogout }) {
   const [screen, setScreen] = useState('dashboard');
-  const [expenses, setExpenses] = useState(SEED_EXPENSES);
-  const [categories, setCategories] = useState(SEED_CATEGORIES);
+  const [expenses, setExpenses] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [editExpense, setEditExpense] = useState(null);
   const [toast, setToast] = useState(null);
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
   const toastTimer = useRef(null);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const [ops, cats] = await Promise.all([
+          api.getOperations(),
+          api.getCategories()
+        ]);
+        
+        // Transform backend data to frontend format if necessary
+        // Backend uses 'wording', frontend uses 'label'
+        // Backend uses 'amount' as string, frontend uses as number
+        const transformedOps = ops.map(op => ({
+          id: op.id,
+          label: op.wording,
+          amount: parseFloat(op.amount),
+          date: op.date.split('T')[0],
+          categoryId: op.category.id
+        }));
+
+        setExpenses(transformedOps);
+        setCategories(cats);
+      } catch (err) {
+        showToast("Failed to load data from server", "error");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
 
   useEffect(() => {
     const handler = () => setIsMobile(window.innerWidth < 768);
@@ -908,7 +982,7 @@ export default function Dashboard({ onLogout }) {
       case 'dashboard':
         return <DashboardScreen expenses={expenses} categories={categories} setScreen={handleNavTo} setEditExpense={setEditExpense} isMobile={isMobile} />;
       case 'expenses':
-        return <ExpensesScreen expenses={expenses} categories={categories} setExpenses={setExpenses} setScreen={handleNavTo} setEditExpense={setEditExpense} isMobile={isMobile} />;
+        return <ExpensesScreen expenses={expenses} categories={categories} setExpenses={setExpenses} setScreen={handleNavTo} setEditExpense={setEditExpense} showToast={showToast} isMobile={isMobile} />;
       case 'add-expense':
         return <AddExpenseScreen editExpense={editExpense} expenses={expenses} setExpenses={setExpenses} categories={categories} setScreen={handleNavTo} showToast={showToast} isMobile={isMobile} />;
       case 'categories':
@@ -917,6 +991,18 @@ export default function Dashboard({ onLogout }) {
         return null;
     }
   };
+
+  if (loading) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: T.offwhite, flexDirection: 'column', gap: 20 }}>
+        <Logo size={60} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 20, height: 20, borderRadius: '50%', border: `3px solid ${T.mint}40`, borderTopColor: T.mint, animation: 'spin 0.8s linear infinite' }} />
+          <span style={{ fontWeight: 700, color: T.dark, letterSpacing: '0.05em' }}>CONNECTING TO BANK...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

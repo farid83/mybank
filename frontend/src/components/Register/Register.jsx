@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { api } from '../../services/api'
 
 // ─── THEME ────────────────────────────────────────────────────────────────────
 const T = {
@@ -116,7 +117,7 @@ const Input = ({ label, value, onChange, type = "text", placeholder, required, o
       {label && <label style={{ fontSize: 12, fontWeight: 700, color: T.gray, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}{required && " *"}</label>}
       {type === "select" ? (
         <select value={value} onChange={onChange} onFocus={() => setFocus(true)} onBlur={() => setFocus(false)} style={base}>
-          <option value="">— Select —</option>
+          <option value="">— Sélectionner —</option>
           {options?.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
       ) : (
@@ -168,7 +169,7 @@ export default function Register({ onRegister, onSwitchToLogin }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     if (e) e.preventDefault();
     if (!fullName || !email || !password || !confirmPassword) {
       setError("Please fill in all fields.");
@@ -186,11 +187,14 @@ export default function Register({ onRegister, onSwitchToLogin }) {
     setLoading(true);
     setError("");
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      await api.register(fullName, email, password);
       setLoading(false);
       onRegister({ fullName, email });
-    }, 1500);
+    } catch (err) {
+      setLoading(false);
+      setError(err.message || "An error occurred during registration.");
+    }
   };
 
   return (
@@ -245,7 +249,7 @@ export default function Register({ onRegister, onSwitchToLogin }) {
           <div className="fade-up" style={{ width: "100%", maxWidth: 440 }}>
             <div style={{ marginBottom: 40 }}>
               <h2 style={{ fontWeight: 900, fontSize: 32, color: T.dark, marginBottom: 12, letterSpacing: "-0.02em" }}>Create Account</h2>
-              <p style={{ color: T.gray, fontSize: 15, fontWeight: 500 }}>Step into a smarter financial future.</p>
+              <p style={{ color: T.gray, fontSize: 15, fontWeight: 500 }}>Enter a smarter financial future.</p>
             </div>
 
             {error && (
@@ -329,7 +333,7 @@ export default function Register({ onRegister, onSwitchToLogin }) {
                 onClick={onSwitchToLogin} 
                 style={{ background: "none", border: "none", padding: 0, color: T.mint, fontWeight: 800, cursor: "pointer", fontSize: 14 }}
               >
-                Sign In
+                Sign in
               </button>
             </p>
           </div>

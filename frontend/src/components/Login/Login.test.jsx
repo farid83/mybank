@@ -1,13 +1,21 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Login from './Login';
+import { api } from '../../services/api';
+
+vi.mock('../../services/api', () => ({
+  api: {
+    login: vi.fn(),
+  }
+}));
 
 // ARRANGE
 describe('Login Component', () => {
   const mockOnLogin = vi.fn();
 
   beforeEach(() => {
-    mockOnLogin.mockClear();
+    vi.clearAllMocks();
+    api.login.mockResolvedValue({ token: 'mock-token' });
   });
 
   it('renders the login form with all required elements', () => {
@@ -98,8 +106,9 @@ describe('Login Component', () => {
 
     // ASSERT
     await waitFor(() => {
+      expect(api.login).toHaveBeenCalledWith('test@example.com', 'password123');
       expect(mockOnLogin).toHaveBeenCalledTimes(1);
-    }, { timeout: 2000 });
+    });
   });
 
   it('shows loading state during login process', async () => {

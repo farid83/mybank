@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { api } from '../../services/api'
 
 // ─── THEME ────────────────────────────────────────────────────────────────────
 const T = {
@@ -165,10 +166,17 @@ export default function Login({ onLogin, onSwitchToRegister }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!email || !password) { setError("Please fill in all fields."); return; }
     setLoading(true); setError("");
-    setTimeout(() => { setLoading(false); onLogin(); }, 1200);
+    try {
+      await api.login(email, password);
+      setLoading(false);
+      onLogin();
+    } catch (err) {
+      setLoading(false);
+      setError(err.message || "Invalid credentials.");
+    }
   };
 
   return (
@@ -205,7 +213,7 @@ export default function Login({ onLogin, onSwitchToRegister }) {
               Take control of your money.<br/>Track every expense, understand your habits.
             </p>
             {/* Feature bullets */}
-            {["Smart expense tracking", "Category insights", "Real-time balance"].map((f, i) => (
+            {["Smart expense tracking", "Category-wise insights", "Real-time balance"].map((f, i) => (
               <div key={i} className="fade-up" style={{ animationDelay: `${0.3 + i * 0.08}s`, display: "flex", alignItems: "center", gap: 10, marginTop: 14, justifyContent: "flex-start" }}>
                 <div style={{ width: 20, height: 20, borderRadius: "50%", background: T.mint, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <Icon name="check" size={11} color={T.dark} />
