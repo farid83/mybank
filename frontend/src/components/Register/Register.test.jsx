@@ -21,11 +21,11 @@ describe('Register Component', () => {
   it('renders the register form with all required elements', () => {
     render(<Register onRegister={mockOnRegister} onSwitchToLogin={mockOnSwitchToLogin} />);
 
-    expect(screen.getByText('Create Account', { selector: 'h2' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Create Account' })).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/John Doe/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/john@example\.com/i)).toBeInTheDocument();
     expect(screen.getAllByPlaceholderText(/••••••••/i)).toHaveLength(2); // Password and Confirm
-    expect(screen.getByRole('button', { name: /create account/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Create Account' })).toBeInTheDocument();
     expect(screen.getByText(/already have an account\?/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
   });
@@ -42,7 +42,7 @@ describe('Register Component', () => {
   it('shows error message when submitting empty form', async () => {
     render(<Register onRegister={mockOnRegister} onSwitchToLogin={mockOnSwitchToLogin} />);
 
-    const submitButton = screen.getByRole('button', { name: /create account/i });
+    const submitButton = screen.getByRole('button', { name: 'Create Account' });
     fireEvent.click(submitButton);
 
     expect(screen.getByText('Please fill in all fields.')).toBeInTheDocument();
@@ -59,7 +59,7 @@ describe('Register Component', () => {
     fireEvent.change(passwordInputs[0], { target: { value: 'password123' } });
     fireEvent.change(passwordInputs[1], { target: { value: 'password456' } });
 
-    const submitButton = screen.getByRole('button', { name: /create account/i });
+    const submitButton = screen.getByRole('button', { name: 'Create Account' });
     fireEvent.click(submitButton);
 
     expect(screen.getByText('Passwords do not match.')).toBeInTheDocument();
@@ -76,7 +76,7 @@ describe('Register Component', () => {
     fireEvent.change(passwordInputs[0], { target: { value: '123' } });
     fireEvent.change(passwordInputs[1], { target: { value: '123' } });
 
-    const submitButton = screen.getByRole('button', { name: /create account/i });
+    const submitButton = screen.getByRole('button', { name: 'Create Account' });
     fireEvent.click(submitButton);
 
     expect(screen.getByText('Password must be at least 6 characters.')).toBeInTheDocument();
@@ -125,7 +125,7 @@ describe('Register Component', () => {
     fireEvent.change(passwordInputs[0], { target: { value: 'password123' } });
     fireEvent.change(passwordInputs[1], { target: { value: 'password123' } });
 
-    const submitButton = screen.getByRole('button', { name: /create account/i });
+    const submitButton = screen.getByRole('button', { name: 'Create Account' });
     fireEvent.click(submitButton);
 
     // ASSERT
@@ -144,7 +144,7 @@ describe('Register Component', () => {
   it('clears error message when input is corrected and resubmitted', async () => {
     render(<Register onRegister={mockOnRegister} onSwitchToLogin={mockOnSwitchToLogin} />);
 
-    const submitButton = screen.getByRole('button', { name: /create account/i });
+    const submitButton = screen.getByRole('button', { name: 'Create Account' });
     fireEvent.click(submitButton);
 
     // Error shown
