@@ -749,7 +749,7 @@ export default function Dashboard({ onLogout }) {
       showToast(isEdit ? 'Expense updated!' : 'Expense added!', 'success');
       setScreen('expenses');
     } catch {
-      showToast(message || "Failed to save expense", "error");
+      showToast("Failed to save expense", "error");
     }
   };
 
