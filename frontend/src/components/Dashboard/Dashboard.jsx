@@ -2,19 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { api } from '../../services/api';
 import Expenses from '../Expenses/Expenses';
 import ExpenseForm from '../Expenses/ExpenseForm';
-
-// ─── THEME ────────────────────────────────────────────────────────────────────
-export const T = {
-  teal: '#156064',
-  mint: '#00C49A',
-  yellow: '#F8E16C',
-  white: '#FFFFFF',
-  offwhite: '#F4F9F9',
-  light: '#E8F5F5',
-  gray: '#8BA5A7',
-  dark: '#0D3D40',
-  danger: '#FF6B6B',
-};
+import { T, fmt, fmtDate } from './theme';
 
 
 // ─── GLOBAL STYLES ────────────────────────────────────────────────────────────
@@ -96,7 +84,6 @@ const BALANCE = 1847.35;
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 export const fmt = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
 export const fmtDate = (d) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-const genId = () => Date.now() + Math.random();
 
 // ─── REUSABLE COMPONENTS ──────────────────────────────────────────────────────
 export const Btn = ({ children, variant = 'primary', size = 'md', onClick, type = 'button', disabled, style: sx = {} }) => {
@@ -559,7 +546,7 @@ const CategoriesScreen = ({ categories, setCategories, expenses, showToast, isMo
       setCategories(prev => [...prev, result]);
       setNewTitle(''); setError('');
       showToast('Category added!', 'success');
-    } catch (err) {
+    } catch (_) {
       showToast('Failed to add category', 'error');
     }
   };
@@ -716,7 +703,7 @@ export default function Dashboard({ onLogout }) {
 
         setExpenses(transformedOps);
         setCategories(cats);
-      } catch (err) {
+      } catch (_) {
         showToast("Failed to load data from server", "error");
       } finally {
         setLoading(false);
@@ -765,8 +752,8 @@ export default function Dashboard({ onLogout }) {
 
       showToast(isEdit ? 'Expense updated!' : 'Expense added!', 'success');
       setScreen('expenses');
-    } catch (err) {
-      showToast(err.message || "Failed to save expense", "error");
+    } catch (_) {
+      showToast(_.message || "Failed to save expense", "error");
     }
   };
 
@@ -776,7 +763,7 @@ export default function Dashboard({ onLogout }) {
       setExpenses(prev => prev.filter(e => e.id !== exp.id));
       setDeleteTarget(null);
       showToast('Expense deleted', 'success');
-    } catch (err) {
+    } catch (_) {
       showToast('Failed to delete expense', 'error');
     }
   };
@@ -786,7 +773,7 @@ export default function Dashboard({ onLogout }) {
       setCategories(prev => prev.filter(c => c.id !== cat.id));
       setDeleteTarget(null);
       showToast('Category deleted', 'success');
-    } catch (err) {
+    } catch (_) {
       showToast('Failed to delete category', 'error');
     }
   };

@@ -16,7 +16,8 @@ function App() {
         try {
           await api.getMe();
           setLoggedIn(true);
-        } catch (err) {
+        } catch {
+          console.error('Error checking authentication.....');
           localStorage.removeItem('token');
         }
       }
