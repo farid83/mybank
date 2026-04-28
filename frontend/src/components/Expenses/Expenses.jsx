@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Card, Btn, Input, Badge, Icon, Empty, Dot, T, fmt, fmtDate } from '../Dashboard/Dashboard'; // Reusing base components
-
+import { Card, Btn, Input, Badge, Icon, Empty } from '../Dashboard/Dashboard'; // Reusing base components
+import { T, fmt, fmtDate } from '../Dashboard/theme';
 export default function Expenses({
   expenses,
   categories,

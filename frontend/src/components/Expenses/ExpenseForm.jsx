@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Card, Btn, Input, T, Icon } from '../Dashboard/Dashboard';
+import { Card, Btn, Input } from '../Dashboard/Dashboard';
+import { T } from '../Dashboard/theme';
 
 export default function ExpenseForm({
   expense,
