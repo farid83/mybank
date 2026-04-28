@@ -433,7 +433,7 @@ const DashboardScreen = ({ expenses, categories, setScreen, setEditExpense, isMo
           <p style={{ fontWeight: 900, fontSize: 24, color: T.dark }}>{expenses.length}</p>
           <p style={{ fontSize: 12, color: T.gray, marginTop: 4 }}>Total expenses</p>
           <div style={{ marginTop: 14, display: 'flex', gap: 6 }}>
-            {[...Array(Math.min(expenses.length, 7))].map((_, i) => (
+            {[...Array(Math.min(expenses.length, 7))].map((i) => (
               <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: T.mint, opacity: 0.4 + i * 0.08 }} />
             ))}
           </div>
@@ -542,7 +542,7 @@ const CategoriesScreen = ({ categories, setCategories, expenses, showToast, isMo
       setCategories(prev => [...prev, result]);
       setNewTitle(''); setError('');
       showToast('Category added!', 'success');
-    } catch (_) {
+    } catch {
       showToast('Failed to add category', 'error');
     }
   };
@@ -699,7 +699,7 @@ export default function Dashboard({ onLogout }) {
 
         setExpenses(transformedOps);
         setCategories(cats);
-      } catch (_) {
+      } catch {
         showToast("Failed to load data from server", "error");
       } finally {
         setLoading(false);
@@ -748,8 +748,8 @@ export default function Dashboard({ onLogout }) {
 
       showToast(isEdit ? 'Expense updated!' : 'Expense added!', 'success');
       setScreen('expenses');
-    } catch (_) {
-      showToast(_.message || "Failed to save expense", "error");
+    } catch {
+      showToast(message || "Failed to save expense", "error");
     }
   };
 
@@ -759,7 +759,7 @@ export default function Dashboard({ onLogout }) {
       setExpenses(prev => prev.filter(e => e.id !== exp.id));
       setDeleteTarget(null);
       showToast('Expense deleted', 'success');
-    } catch (_) {
+    } catch {
       showToast('Failed to delete expense', 'error');
     }
   };
@@ -769,7 +769,7 @@ export default function Dashboard({ onLogout }) {
       setCategories(prev => prev.filter(c => c.id !== cat.id));
       setDeleteTarget(null);
       showToast('Category deleted', 'success');
-    } catch (_) {
+    } catch {
       showToast('Failed to delete category', 'error');
     }
   };
