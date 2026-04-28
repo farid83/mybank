@@ -61,8 +61,8 @@ describe('Dashboard Component', () => {
     const seeAllButton = screen.getByText(/See all/i);
     fireEvent.click(seeAllButton);
 
-    expect(screen.getByRole('heading', { name: 'Expenses', level: 1 })).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Search expenses…')).toBeInTheDocument();
+    expect(screen.getByText('Expenses', { selector: 'h1' })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/Search expenses/i)).toBeInTheDocument();
   });
 
   it('opens the add expense screen', async () => {

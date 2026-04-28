@@ -1,17 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
 import { api } from '../../services/api';
+import Expenses from '../Expenses/Expenses';
+import ExpenseForm from '../Expenses/ExpenseForm';
 
 // ─── THEME ────────────────────────────────────────────────────────────────────
-const T = {
-  teal:    '#156064',
-  mint:    '#00C49A',
-  yellow:  '#F8E16C',
-  white:   '#FFFFFF',
-  offwhite:'#F4F9F9',
-  light:   '#E8F5F5',
-  gray:    '#8BA5A7',
-  dark:    '#0D3D40',
-  danger:  '#FF6B6B',
+export const T = {
+  teal: '#156064',
+  mint: '#00C49A',
+  yellow: '#F8E16C',
+  white: '#FFFFFF',
+  offwhite: '#F4F9F9',
+  light: '#E8F5F5',
+  gray: '#8BA5A7',
+  dark: '#0D3D40',
+  danger: '#FF6B6B',
 };
 
 
@@ -69,35 +71,35 @@ const globalStyle = `
 
 // ─── SEED DATA ────────────────────────────────────────────────────────────────
 const SEED_CATEGORIES = [
-  { id: 1, title: 'Alimentation',  color: T.mint   },
-  { id: 2, title: 'Transport',      color: T.teal   },
-  { id: 3, title: 'Loisirs',        color: T.yellow },
-  { id: 4, title: 'Santé',          color: '#FF8FAB'},
-  { id: 5, title: 'Shopping',       color: '#A78BFA'},
+  { id: 1, title: 'Alimentation', color: T.mint },
+  { id: 2, title: 'Transport', color: T.teal },
+  { id: 3, title: 'Loisirs', color: T.yellow },
+  { id: 4, title: 'Santé', color: '#FF8FAB' },
+  { id: 5, title: 'Shopping', color: '#A78BFA' },
 ];
 
 const SEED_EXPENSES = [
-  { id: 1, label: 'Lunch at Café',      amount: 14.5,  date: '2025-04-22', categoryId: 1 },
-  { id: 2, label: 'Metro monthly pass', amount: 86.4,  date: '2025-04-20', categoryId: 2 },
-  { id: 3, label: 'Cinema tickets',     amount: 22.0,  date: '2025-04-19', categoryId: 3 },
-  { id: 4, label: 'Grocery run',        amount: 53.2,  date: '2025-04-18', categoryId: 1 },
-  { id: 5, label: 'Pharmacy',           amount: 18.9,  date: '2025-04-17', categoryId: 4 },
-  { id: 6, label: 'New sneakers',       amount: 79.99, date: '2025-04-15', categoryId: 5 },
-  { id: 7, label: 'Spotify Premium',    amount: 9.99,  date: '2025-04-14', categoryId: 3 },
-  { id: 8, label: 'Burger & fries',     amount: 12.3,  date: '2025-04-12', categoryId: 1 },
-  { id: 9, label: 'Uber ride',          amount: 7.6,   date: '2025-04-11', categoryId: 2 },
-  { id: 10, label: 'Book purchase',      amount: 16.0,  date: '2025-04-10', categoryId: 5 },
+  { id: 1, label: 'Lunch at Café', amount: 14.5, date: '2025-04-22', categoryId: 1 },
+  { id: 2, label: 'Metro monthly pass', amount: 86.4, date: '2025-04-20', categoryId: 2 },
+  { id: 3, label: 'Cinema tickets', amount: 22.0, date: '2025-04-19', categoryId: 3 },
+  { id: 4, label: 'Grocery run', amount: 53.2, date: '2025-04-18', categoryId: 1 },
+  { id: 5, label: 'Pharmacy', amount: 18.9, date: '2025-04-17', categoryId: 4 },
+  { id: 6, label: 'New sneakers', amount: 79.99, date: '2025-04-15', categoryId: 5 },
+  { id: 7, label: 'Spotify Premium', amount: 9.99, date: '2025-04-14', categoryId: 3 },
+  { id: 8, label: 'Burger & fries', amount: 12.3, date: '2025-04-12', categoryId: 1 },
+  { id: 9, label: 'Uber ride', amount: 7.6, date: '2025-04-11', categoryId: 2 },
+  { id: 10, label: 'Book purchase', amount: 16.0, date: '2025-04-10', categoryId: 5 },
 ];
 
 const BALANCE = 1847.35;
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
-const fmt = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
-const fmtDate = (d) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+export const fmt = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+export const fmtDate = (d) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 const genId = () => Date.now() + Math.random();
 
 // ─── REUSABLE COMPONENTS ──────────────────────────────────────────────────────
-const Btn = ({ children, variant = 'primary', size = 'md', onClick, type = 'button', disabled, style: sx = {} }) => {
+export const Btn = ({ children, variant = 'primary', size = 'md', onClick, type = 'button', disabled, style: sx = {} }) => {
   const base = {
     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
     gap: 8, fontWeight: 700, letterSpacing: '0.02em', border: 'none',
@@ -106,23 +108,23 @@ const Btn = ({ children, variant = 'primary', size = 'md', onClick, type = 'butt
     fontFamily: 'Montserrat, sans-serif', opacity: disabled ? 0.5 : 1,
   };
   const sizes = {
-    sm: { padding: '8px 18px',  fontSize: 13 },
+    sm: { padding: '8px 18px', fontSize: 13 },
     md: { padding: '12px 26px', fontSize: 14 },
     lg: { padding: '16px 36px', fontSize: 16 },
   };
   const variants = {
-    primary:   { background: T.mint,   color: T.dark },
-    secondary: { background: T.teal,   color: T.white },
-    outline:   { background: 'transparent', color: T.teal, border: `2px solid ${T.teal}` },
-    danger:    { background: T.danger, color: T.white },
-    ghost:     { background: 'transparent', color: T.gray },
-    yellow:    { background: T.yellow, color: T.dark },
+    primary: { background: T.mint, color: T.dark },
+    secondary: { background: T.teal, color: T.white },
+    outline: { background: 'transparent', color: T.teal, border: `2px solid ${T.teal}` },
+    danger: { background: T.danger, color: T.white },
+    ghost: { background: 'transparent', color: T.gray },
+    yellow: { background: T.yellow, color: T.dark },
   };
   const hoverMap = {
-    primary:   { filter: 'brightness(1.08)', transform: 'translateY(-1px)', boxShadow: `0 8px 24px ${T.mint}55` },
+    primary: { filter: 'brightness(1.08)', transform: 'translateY(-1px)', boxShadow: `0 8px 24px ${T.mint}55` },
     secondary: { filter: 'brightness(1.15)', transform: 'translateY(-1px)' },
-    yellow:    { filter: 'brightness(1.06)', transform: 'translateY(-1px)' },
-    danger:    { filter: 'brightness(1.08)', transform: 'translateY(-1px)' },
+    yellow: { filter: 'brightness(1.06)', transform: 'translateY(-1px)' },
+    danger: { filter: 'brightness(1.08)', transform: 'translateY(-1px)' },
   };
   const [hover, setHover] = useState(false);
   return (
@@ -136,7 +138,7 @@ const Btn = ({ children, variant = 'primary', size = 'md', onClick, type = 'butt
   );
 };
 
-const Card = ({ children, style: sx = {}, className = '', onClick }) => (
+export const Card = ({ children, style: sx = {}, className = '', onClick }) => (
   <div
     className={className}
     onClick={onClick}
@@ -150,7 +152,7 @@ const Card = ({ children, style: sx = {}, className = '', onClick }) => (
   </div>
 );
 
-const Input = ({ label, value, onChange, type = 'text', placeholder, required, options }) => {
+export const Input = ({ label, value, onChange, type = 'text', placeholder, required, options }) => {
   const [focus, setFocus] = useState(false);
   const base = {
     width: '100%', padding: '12px 16px', borderRadius: 12, fontSize: 14,
@@ -164,8 +166,7 @@ const Input = ({ label, value, onChange, type = 'text', placeholder, required, o
       {label && <label style={{ fontSize: 12, fontWeight: 700, color: T.gray, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}{required && ' *'}</label>}
       {type === 'select' ? (
         <select value={value} onChange={onChange} onFocus={() => setFocus(true)} onBlur={() => setFocus(false)} style={base}>
-          <option value="">— Select —</option>
-          {options?.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+          {options?.map(o => <option key={String(o.value)} value={String(o.value)}>{o.label}</option>)}
         </select>
       ) : (
         <input
@@ -178,7 +179,7 @@ const Input = ({ label, value, onChange, type = 'text', placeholder, required, o
   );
 };
 
-const Badge = ({ color, label }) => (
+export const Badge = ({ color, label }) => (
   <span style={{
     display: 'inline-block', padding: '3px 10px', borderRadius: 50,
     background: color + '22', color, fontSize: 11, fontWeight: 700,
@@ -186,7 +187,7 @@ const Badge = ({ color, label }) => (
   }}>{label}</span>
 );
 
-const Logo = ({ size = 36 }) => (
+export const Logo = ({ size = 36 }) => (
   <div style={{
     width: size, height: size, borderRadius: '50%',
     background: `linear-gradient(135deg, ${T.mint} 0%, ${T.teal} 100%)`,
@@ -196,27 +197,27 @@ const Logo = ({ size = 36 }) => (
   </div>
 );
 
-const Dot = ({ color }) => (
+export const Dot = ({ color }) => (
   <span style={{ width: 10, height: 10, borderRadius: '50%', background: color, display: 'inline-block', flexShrink: 0 }} />
 );
 
 const icons = {
-  home:     'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10',
-  list:     'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01',
-  plus:     'M12 5v14M5 12h14',
-  tag:      'M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z M7 7h.01',
-  logout:   'M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9',
-  edit:     'M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7 M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z',
-  trash:    'M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6 M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2',
+  home: 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10',
+  list: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01',
+  plus: 'M12 5v14M5 12h14',
+  tag: 'M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z M7 7h.01',
+  logout: 'M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9',
+  edit: 'M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7 M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z',
+  trash: 'M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6 M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2',
   chevronR: 'M9 18l6-6-6-6',
-  wallet:   'M2 7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7z M16 12a1 1 0 1 0 2 0 1 1 0 0 0-2 0',
-  eye:      'M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z',
-  eyeOff:   'M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94 M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19 M1 1l22 22',
-  close:    'M18 6L6 18M6 6l12 12',
-  check:    'M20 6L9 17l-5-5',
+  wallet: 'M2 7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7z M16 12a1 1 0 1 0 2 0 1 1 0 0 0-2 0',
+  eye: 'M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z',
+  eyeOff: 'M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94 M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19 M1 1l22 22',
+  close: 'M18 6L6 18M6 6l12 12',
+  check: 'M20 6L9 17l-5-5',
 };
 
-const Icon = ({ name, size = 20, color = 'currentColor', strokeWidth = 2 }) => (
+export const Icon = ({ name, size = 20, color = 'currentColor', strokeWidth = 2 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round">
     {icons[name]?.split(' M').map((d, i) => (
       <path key={i} d={(i === 0 ? d : 'M' + d)} />
@@ -240,14 +241,14 @@ const Toast = ({ message, type = 'success', onClose }) => (
   </div>
 );
 
-const Empty = ({ label }) => (
+export const Empty = ({ label }) => (
   <div style={{ textAlign: 'center', padding: '40px 20px', color: T.gray }}>
     <div style={{ fontSize: 40, marginBottom: 12 }}>🫙</div>
     <p style={{ fontWeight: 600, fontSize: 15 }}>{label}</p>
   </div>
 );
 
-const DeleteModal = ({ label, onConfirm, onCancel }) => (
+export const DeleteModal = ({ label, onConfirm, onCancel }) => (
   <div style={{
     position: 'fixed', inset: 0, background: 'rgba(13,61,64,0.45)', zIndex: 999,
     display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)',
@@ -265,9 +266,9 @@ const DeleteModal = ({ label, onConfirm, onCancel }) => (
 );
 
 const NAV_ITEMS = [
-  { id: 'dashboard',   label: 'Dashboard',   icon: 'home'  },
-  { id: 'expenses',    label: 'Expenses',    icon: 'list'  },
-  { id: 'categories',  label: 'Categories',  icon: 'tag'   },
+  { id: 'dashboard', label: 'Dashboard', icon: 'home' },
+  { id: 'expenses', label: 'Expenses', icon: 'list' },
+  { id: 'categories', label: 'Categories', icon: 'tag' },
 ];
 
 const Sidebar = ({ screen, setScreen, onLogout }) => {
@@ -297,7 +298,7 @@ const Sidebar = ({ screen, setScreen, onLogout }) => {
           boxShadow: '0 2px 8px rgba(0,0,0,0.15)', transition: 'transform 0.3s', transform: collapsed ? 'rotate(180deg)' : 'rotate(0deg)',
         }}
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.dark} strokeWidth="2.5" strokeLinecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.dark} strokeWidth="2.5" strokeLinecap="round"><path d="M15 18l-6-6 6-6" /></svg>
       </button>
 
       <nav style={{ flex: 1, padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -536,244 +537,6 @@ const DashboardScreen = ({ expenses, categories, setScreen, setEditExpense, isMo
   );
 };
 
-const ExpensesScreen = ({ expenses, categories, setExpenses, setScreen, setEditExpense, showToast, isMobile }) => {
-  const [search, setSearch] = useState('');
-  const [filterCat, setFilterCat] = useState('');
-  const [deleteTarget, setDeleteTarget] = useState(null);
-  const [key, setKey] = useState(0);
-
-  const filtered = expenses
-    .filter(e => e.label.toLowerCase().includes(search.toLowerCase()))
-    .filter(e => filterCat ? e.categoryId === +filterCat : true)
-    .sort((a, b) => new Date(b.date) - new Date(a.date));
-
-  const handleDelete = async (exp) => {
-    try {
-      await api.deleteOperation(exp.id);
-      setExpenses(prev => prev.filter(e => e.id !== exp.id));
-      setDeleteTarget(null);
-      setKey(k => k + 1);
-      showToast('Expense deleted', 'success');
-    } catch (err) {
-      showToast('Failed to delete expense', 'error');
-    }
-  };
-
-  return (
-    <div className="fade-in" key={key} style={{ padding: isMobile ? '20px 16px 90px' : '32px 36px', maxWidth: 900, margin: '0 auto' }}>
-      {deleteTarget && <DeleteModal label={deleteTarget.label} onConfirm={() => handleDelete(deleteTarget)} onCancel={() => setDeleteTarget(null)} />}
-
-      <div className="fade-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
-        <div>
-          <p style={{ color: T.gray, fontSize: 13, fontWeight: 600, marginBottom: 4 }}>{expenses.length} transactions</p>
-          <h1 style={{ fontWeight: 900, fontSize: isMobile ? 24 : 30, color: T.dark, letterSpacing: '-0.02em' }}>Expenses</h1>
-        </div>
-        <Btn variant="primary" onClick={() => { setEditExpense(null); setScreen('add-expense'); }}>
-          <Icon name="plus" size={16} color={T.dark} /> Add Expense
-        </Btn>
-      </div>
-
-      <Card className="fade-up delay-1" style={{ marginBottom: 20, padding: 16 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr auto', gap: 12, alignItems: 'end' }}>
-          <Input label="Search" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search expenses…" />
-          <div style={{ minWidth: 160 }}>
-            <Input label="Category" type="select" value={filterCat} onChange={e => setFilterCat(e.target.value)}
-              options={[{ value: '', label: 'All categories' }, ...categories.map(c => ({ value: c.id, label: c.title }))]}
-            />
-          </div>
-        </div>
-      </Card>
-
-      <Card className="fade-up delay-2" style={{ padding: 0, overflow: 'hidden' }}>
-        {filtered.length === 0 ? (
-          <div style={{ padding: 24 }}><Empty label="No expenses found" /></div>
-        ) : (
-          <div>
-            {!isMobile && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 140px 160px 100px', gap: 12, padding: '14px 24px', borderBottom: `1px solid ${T.light}`, background: T.offwhite }}>
-                {['Label', 'Amount', 'Date', 'Category', ''].map((h, i) => (
-                  <span key={i} style={{ fontSize: 11, fontWeight: 700, color: T.gray, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{h}</span>
-                ))}
-              </div>
-            )}
-            {filtered.map((exp, i) => {
-              const cat = categories.find(c => c.id === exp.categoryId);
-              return (
-                <div
-                  key={exp.id}
-                  className="fade-up"
-                  style={{
-                    animationDelay: `${0.28 + i * 0.04}s`, display: isMobile ? 'flex' : 'grid',
-                    gridTemplateColumns: isMobile ? undefined : '1fr 120px 140px 160px 100px',
-                    flexDirection: isMobile ? 'column' : undefined, gap: 12, padding: isMobile ? '16px' : '16px 24px',
-                    borderBottom: i < filtered.length - 1 ? `1px solid ${T.light}` : 'none', transition: 'background 0.15s',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.background = T.offwhite; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-                >
-                  {isMobile ? (
-                    <>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <div>
-                          <p style={{ fontWeight: 700, fontSize: 14, color: T.dark }}>{exp.label}</p>
-                          <p style={{ fontSize: 12, color: T.gray, marginTop: 4 }}>{fmtDate(exp.date)}</p>
-                        </div>
-                        <p style={{ fontWeight: 800, fontSize: 16, color: T.dark }}>{fmt(exp.amount)}</p>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        {cat ? <Badge color={cat.color} label={cat.title} /> : <span />}
-                        <div style={{ display: 'flex', gap: 8 }}>
-                          <button onClick={() => { setEditExpense(exp); setScreen('add-expense'); }} style={{ background: T.teal + '15', border: 'none', borderRadius: 8, padding: '6px 10px', cursor: 'pointer', color: T.teal }}>
-                            <Icon name="edit" size={14} color={T.teal} />
-                          </button>
-                          <button onClick={() => setDeleteTarget(exp)} style={{ background: T.danger + '15', border: 'none', borderRadius: 8, padding: '6px 10px', cursor: 'pointer' }}>
-                            <Icon name="trash" size={14} color={T.danger} />
-                          </button>
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <p style={{ fontWeight: 700, fontSize: 14, color: T.dark, alignSelf: 'center' }}>{exp.label}</p>
-                      <p style={{ fontWeight: 800, fontSize: 15, color: T.dark, alignSelf: 'center' }}>{fmt(exp.amount)}</p>
-                      <p style={{ fontSize: 13, color: T.gray, alignSelf: 'center' }}>{fmtDate(exp.date)}</p>
-                      <div style={{ alignSelf: 'center' }}>{cat ? <Badge color={cat.color} label={cat.title} /> : '—'}</div>
-                      <div style={{ display: 'flex', gap: 6, alignSelf: 'center', justifyContent: 'flex-end' }}>
-                        <button onClick={() => { setEditExpense(exp); setScreen('add-expense'); }} style={{ background: T.teal + '15', border: 'none', borderRadius: 8, padding: '7px 10px', cursor: 'pointer', display: 'flex' }}>
-                          <Icon name="edit" size={15} color={T.teal} />
-                        </button>
-                        <button onClick={() => setDeleteTarget(exp)} style={{ background: T.danger + '15', border: 'none', borderRadius: 8, padding: '7px 10px', cursor: 'pointer', display: 'flex' }}>
-                          <Icon name="trash" size={15} color={T.danger} />
-                        </button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </Card>
-    </div>
-  );
-};
-
-const AddExpenseScreen = ({ editExpense, setExpenses, categories, setScreen, showToast, isMobile }) => {
-  const isEdit = !!editExpense;
-  const [label, setLabel] = useState(editExpense?.label || '');
-  const [amount, setAmount] = useState(editExpense?.amount || '');
-  const [date, setDate] = useState(editExpense?.date || new Date().toISOString().slice(0, 10));
-  const [catId, setCatId] = useState(editExpense?.categoryId || '');
-  const [errors, setErrors] = useState({});
-  const [saving, setSaving] = useState(false);
-
-  const validate = () => {
-    const e = {};
-    if (!label.trim()) e.label = 'Label is required';
-    if (!amount || +amount <= 0) e.amount = 'Enter a valid amount';
-    if (!date) e.date = 'Date is required';
-    if (!catId) e.catId = 'Select a category';
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  };
-
-  const handleSave = async () => {
-    if (!validate()) return;
-    setSaving(true);
-    try {
-      const payload = {
-        wording: label.trim(),
-        amount: parseFloat(amount),
-        date: date,
-        categoryId: parseInt(catId)
-      };
-
-      let result;
-      if (isEdit) {
-        result = await api.updateOperation(editExpense.id, payload);
-      } else {
-        result = await api.createOperation(payload);
-      }
-
-      const transformedResult = {
-        id: result.id,
-        label: result.wording,
-        amount: parseFloat(result.amount),
-        date: result.date.split('T')[0],
-        categoryId: result.category.id
-      };
-
-      setExpenses(prev => isEdit 
-        ? prev.map(e => e.id === transformedResult.id ? transformedResult : e) 
-        : [transformedResult, ...prev]
-      );
-      
-      showToast(isEdit ? 'Expense updated!' : 'Expense added!', 'success');
-      setScreen('expenses');
-    } catch (err) {
-      showToast(err.message || "Failed to save expense", "error");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  return (
-    <div className="fade-in" style={{ padding: isMobile ? '20px 16px 90px' : '32px 36px', maxWidth: 600, margin: '0 auto' }}>
-      <button onClick={() => setScreen('expenses')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.gray, display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, marginBottom: 20, padding: 0 }}>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        Back to Expenses
-      </button>
-
-      <div className="fade-up" style={{ marginBottom: 28 }}>
-        <h1 style={{ fontWeight: 900, fontSize: isMobile ? 24 : 30, color: T.dark, letterSpacing: '-0.02em' }}>{isEdit ? 'Edit Expense' : 'Add Expense'}</h1>
-        <p style={{ color: T.gray, fontSize: 13, fontWeight: 500, marginTop: 6 }}>{isEdit ? 'Update the details below.' : 'Fill in the details of your new expense.'}</p>
-      </div>
-
-      <Card className="fade-up">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          <div>
-            <Input label="Label" value={label} onChange={e => setLabel(e.target.value)} placeholder="e.g. Lunch at Café" required />
-            {errors.label && <p style={{ color: T.danger, fontSize: 12, fontWeight: 600, marginTop: 4 }}>{errors.label}</p>}
-          </div>
-          <div>
-            <Input label="Amount ($)" type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0.00" required />
-            {errors.amount && <p style={{ color: T.danger, fontSize: 12, fontWeight: 600, marginTop: 4 }}>{errors.amount}</p>}
-          </div>
-          <div>
-            <Input label="Date" type="date" value={date} onChange={e => setDate(e.target.value)} required />
-            {errors.date && <p style={{ color: T.danger, fontSize: 12, fontWeight: 600, marginTop: 4 }}>{errors.date}</p>}
-          </div>
-          <div>
-            <Input label="Category" type="select" value={catId} onChange={e => setCatId(e.target.value)} options={categories.map(c => ({ value: c.id, label: c.title }))} required />
-            {errors.catId && <p style={{ color: T.danger, fontSize: 12, fontWeight: 600, marginTop: 4 }}>{errors.catId}</p>}
-          </div>
-
-          {catId && (() => {
-            const cat = categories.find(c => c.id === +catId);
-            return cat ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', background: cat.color + '15', borderRadius: 12 }}>
-                <Dot color={cat.color} />
-                <span style={{ fontWeight: 600, fontSize: 13, color: T.dark }}>{cat.title}</span>
-              </div>
-            ) : null;
-          })()}
-
-          <div style={{ display: 'flex', gap: 12, paddingTop: 4 }}>
-            <Btn variant="outline" onClick={() => setScreen('expenses')} style={{ flex: 1 }}>Cancel</Btn>
-            <Btn variant="primary" onClick={handleSave} disabled={saving} style={{ flex: 2 }}>
-              {saving ? (
-                <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 14, height: 14, borderRadius: '50%', border: `2px solid ${T.dark}40`, borderTopColor: T.dark, animation: 'spin 0.7s linear infinite' }} />
-                  Saving…
-                </span>
-              ) : (isEdit ? 'Save Changes' : 'Add Expense')}
-            </Btn>
-          </div>
-        </div>
-      </Card>
-    </div>
-  );
-};
 
 const PALETTE = [T.mint, T.teal, T.yellow, '#FF8FAB', '#A78BFA', '#F97316', '#06B6D4', '#84CC16'];
 
@@ -790,7 +553,7 @@ const CategoriesScreen = ({ categories, setCategories, expenses, showToast, isMo
   const handleAdd = async () => {
     if (!newTitle.trim()) { setError('Category name is required.'); return; }
     if (categories.find(c => c.title.toLowerCase() === newTitle.trim().toLowerCase())) { setError('Category already exists.'); return; }
-    
+
     try {
       const result = await api.createCategory(newTitle.trim());
       setCategories(prev => [...prev, result]);
@@ -939,7 +702,7 @@ export default function Dashboard({ onLogout }) {
           api.getOperations(),
           api.getCategories()
         ]);
-        
+
         // Transform backend data to frontend format if necessary
         // Backend uses 'wording', frontend uses 'label'
         // Backend uses 'amount' as string, frontend uses as number
@@ -969,6 +732,65 @@ export default function Dashboard({ onLogout }) {
     return () => window.removeEventListener('resize', handler);
   }, []);
 
+  const [deleteTarget, setDeleteTarget] = useState(null);
+
+  const handleSaveExpense = async (data) => {
+    try {
+      const isEdit = !!editExpense;
+      let result;
+      const payload = {
+        wording: data.label,
+        amount: data.amount,
+        date: data.date,
+        categoryId: data.categoryId
+      };
+      if (isEdit) {
+        result = await api.updateOperation(editExpense.id, payload);
+      } else {
+        result = await api.createOperation(payload);
+      }
+
+      const transformedResult = {
+        id: result.id,
+        label: result.wording,
+        amount: parseFloat(result.amount),
+        date: result.date.split('T')[0],
+        categoryId: result.category.id
+      };
+
+      setExpenses(prev => isEdit
+        ? prev.map(e => e.id === editExpense.id ? transformedResult : e)
+        : [transformedResult, ...prev]
+      );
+
+      showToast(isEdit ? 'Expense updated!' : 'Expense added!', 'success');
+      setScreen('expenses');
+    } catch (err) {
+      showToast(err.message || "Failed to save expense", "error");
+    }
+  };
+
+  const handleDeleteExpense = async (exp) => {
+    try {
+      await api.deleteOperation(exp.id);
+      setExpenses(prev => prev.filter(e => e.id !== exp.id));
+      setDeleteTarget(null);
+      showToast('Expense deleted', 'success');
+    } catch (err) {
+      showToast('Failed to delete expense', 'error');
+    }
+  };
+
+  const handleDeleteCategory = async (cat) => {
+    try {
+      setCategories(prev => prev.filter(c => c.id !== cat.id));
+      setDeleteTarget(null);
+      showToast('Category deleted', 'success');
+    } catch (err) {
+      showToast('Failed to delete category', 'error');
+    }
+  };
+
   const showToast = (message, type = 'success') => {
     clearTimeout(toastTimer.current);
     setToast({ message, type });
@@ -979,16 +801,30 @@ export default function Dashboard({ onLogout }) {
 
   const renderScreen = () => {
     switch (screen) {
-      case 'dashboard':
-        return <DashboardScreen expenses={expenses} categories={categories} setScreen={handleNavTo} setEditExpense={setEditExpense} isMobile={isMobile} />;
+      case 'dashboard': return <DashboardScreen expenses={expenses} categories={categories} setScreen={handleNavTo} setEditExpense={setEditExpense} isMobile={isMobile} />;
       case 'expenses':
-        return <ExpensesScreen expenses={expenses} categories={categories} setExpenses={setExpenses} setScreen={handleNavTo} setEditExpense={setEditExpense} showToast={showToast} isMobile={isMobile} />;
+        return (
+          <Expenses
+            expenses={expenses}
+            categories={categories}
+            onAddExpense={() => { setEditExpense(null); setScreen('add-expense'); }}
+            onEditExpense={(exp) => { setEditExpense(exp); setScreen('add-expense'); }}
+            onDeleteExpense={setDeleteTarget}
+            isMobile={isMobile}
+          />
+        );
       case 'add-expense':
-        return <AddExpenseScreen editExpense={editExpense} expenses={expenses} setExpenses={setExpenses} categories={categories} setScreen={handleNavTo} showToast={showToast} isMobile={isMobile} />;
-      case 'categories':
-        return <CategoriesScreen categories={categories} setCategories={setCategories} expenses={expenses} showToast={showToast} isMobile={isMobile} />;
-      default:
-        return null;
+        return (
+          <ExpenseForm
+            expense={editExpense}
+            categories={categories}
+            isMobile={isMobile}
+            onCancel={() => setScreen('expenses')}
+            onSave={handleSaveExpense}
+          />
+        );
+      case 'categories': return <CategoriesScreen categories={categories} setCategories={setCategories} expenses={expenses} showToast={showToast} isMobile={isMobile} />;
+      default: return null;
     }
   };
 
@@ -1008,6 +844,7 @@ export default function Dashboard({ onLogout }) {
     <>
       <style>{globalStyle}</style>
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      {deleteTarget && <DeleteModal label={deleteTarget.label || deleteTarget.title} onConfirm={() => (deleteTarget.label ? handleDeleteExpense(deleteTarget) : handleDeleteCategory(deleteTarget))} onCancel={() => setDeleteTarget(null)} />}
 
       {isMobile ? (
         <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: T.offwhite }}>
