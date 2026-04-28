@@ -97,8 +97,6 @@ describe('Expenses Component', () => {
     fireEvent.change(sortBySelect, { target: { value: 'amount-desc' } });
 
     const allAmounts = screen.getAllByText(/\$/).map(el => el.textContent);
-    // Skip "FILTERED TOTAL" and "AVG. TRANSACTION" cards
-    const expenseElements = allAmounts.filter(text => !text.includes('Total') && !text.includes('Avg'));
     // If that's not enough, slice specifically
     const listAmounts = allAmounts.slice(2);
     
