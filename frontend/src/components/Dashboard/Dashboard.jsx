@@ -81,10 +81,6 @@ const SEED_EXPENSES = [
 
 const BALANCE = 1847.35;
 
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
-export const fmt = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
-export const fmtDate = (d) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
 // ─── REUSABLE COMPONENTS ──────────────────────────────────────────────────────
 export const Btn = ({ children, variant = 'primary', size = 'md', onClick, type = 'button', disabled, style: sx = {} }) => {
   const base = {
