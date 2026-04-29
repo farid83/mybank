@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation, Outlet, useOutletContext } from 'react-router-dom';
 import { api } from '../../services/api';
 import Expenses from '../Expenses/Expenses';
 import ExpenseForm from '../Expenses/ExpenseForm';
@@ -249,13 +250,15 @@ export const DeleteModal = ({ label, onConfirm, onCancel }) => (
 );
 
 const NAV_ITEMS = [
-  { id: 'dashboard', label: 'Dashboard', icon: 'home' },
-  { id: 'expenses', label: 'Expenses', icon: 'list' },
-  { id: 'categories', label: 'Categories', icon: 'tag' },
+  { id: '/dashboard', label: 'Dashboard', icon: 'home' },
+  { id: '/dashboard/expenses', label: 'Expenses', icon: 'list' },
+  { id: '/dashboard/categories', label: 'Categories', icon: 'tag' },
 ];
 
-const Sidebar = ({ screen, setScreen, onLogout }) => {
+const Sidebar = ({ onLogout }) => {
   const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <aside style={{
@@ -286,11 +289,11 @@ const Sidebar = ({ screen, setScreen, onLogout }) => {
 
       <nav style={{ flex: 1, padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: 4 }}>
         {NAV_ITEMS.map(item => {
-          const active = screen === item.id;
+          const active = location.pathname === item.id || (item.id === '/dashboard' && location.pathname === '/dashboard/');
           return (
             <button
               key={item.id}
-              onClick={() => setScreen(item.id)}
+              onClick={() => navigate(item.id)}
               title={collapsed ? item.label : ''}
               style={{
                 display: 'flex', alignItems: 'center', gap: 12,
@@ -310,7 +313,7 @@ const Sidebar = ({ screen, setScreen, onLogout }) => {
 
       {!collapsed && (
         <div style={{ padding: '0 16px 16px' }}>
-          <Btn variant="yellow" size="sm" onClick={() => setScreen('add-expense')} style={{ width: '100%', borderRadius: 14 }}>
+          <Btn variant="yellow" size="sm" onClick={() => navigate('/dashboard/add-expense')} style={{ width: '100%', borderRadius: 14 }}>
             <Icon name="plus" size={16} color={T.dark} /> Add Expense
           </Btn>
         </div>
@@ -336,47 +339,54 @@ const Sidebar = ({ screen, setScreen, onLogout }) => {
   );
 };
 
-const MobileNav = ({ screen, setScreen }) => (
-  <nav style={{
-    position: 'fixed', bottom: 0, left: 0, right: 0, background: T.white,
-    borderTop: `1px solid ${T.light}`, display: 'flex', justifyContent: 'space-around', alignItems: 'center',
-    padding: '8px 0 16px', zIndex: 100, boxShadow: '0 -4px 20px rgba(21,96,100,0.1)',
-  }}>
-    {NAV_ITEMS.map(item => {
-      const active = screen === item.id;
-      return (
-        <button
-          key={item.id} onClick={() => setScreen(item.id)}
-          style={{
-            background: 'none', border: 'none', cursor: 'pointer',
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-            color: active ? T.mint : T.gray, fontWeight: active ? 700 : 500, fontSize: 10,
-            transition: 'color 0.15s',
-          }}
-        >
-          <div style={{
-            background: active ? T.mint + '20' : 'transparent', padding: '6px 14px', borderRadius: 12,
-            transition: 'background 0.15s',
-          }}>
-            <Icon name={item.icon} size={20} color={active ? T.mint : T.gray} />
-          </div>
-          {item.label}
-        </button>
-      );
-    })}
-    <button
-      onClick={() => setScreen('add-expense')}
-      style={{
-        background: T.mint, border: 'none', cursor: 'pointer', width: 44, height: 44, borderRadius: '50%',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 16px ${T.mint}88`,
-      }}
-    >
-      <Icon name="plus" size={22} color={T.dark} />
-    </button>
-  </nav>
-);
+const MobileNav = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
 
-const DashboardScreen = ({ expenses, categories, setScreen, setEditExpense, isMobile }) => {
+  return (
+    <nav style={{
+      position: 'fixed', bottom: 0, left: 0, right: 0, background: T.white,
+      borderTop: `1px solid ${T.light}`, display: 'flex', justifyContent: 'space-around', alignItems: 'center',
+      padding: '8px 0 16px', zIndex: 100, boxShadow: '0 -4px 20px rgba(21,96,100,0.1)',
+    }}>
+      {NAV_ITEMS.map(item => {
+        const active = location.pathname === item.id;
+        return (
+          <button
+            key={item.id} onClick={() => navigate(item.id)}
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+              color: active ? T.mint : T.gray, fontWeight: active ? 700 : 500, fontSize: 10,
+              transition: 'color 0.15s',
+            }}
+          >
+            <div style={{
+              background: active ? T.mint + '20' : 'transparent', padding: '6px 14px', borderRadius: 12,
+              transition: 'background 0.15s',
+            }}>
+              <Icon name={item.icon} size={20} color={active ? T.mint : T.gray} />
+            </div>
+            {item.label}
+          </button>
+        );
+      })}
+      <button
+        onClick={() => navigate('/dashboard/add-expense')}
+        style={{
+          background: T.mint, border: 'none', cursor: 'pointer', width: 44, height: 44, borderRadius: '50%',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 16px ${T.mint}88`,
+        }}
+      >
+        <Icon name="plus" size={22} color={T.dark} />
+      </button>
+    </nav>
+  );
+};
+
+export const DashboardScreen = () => {
+  const { expenses, categories, isMobile } = useOutletContext();
+  const navigate = useNavigate();
   const total = expenses.reduce((s, e) => s + e.amount, 0);
   const recent = [...expenses].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
 
@@ -444,7 +454,7 @@ const DashboardScreen = ({ expenses, categories, setScreen, setEditExpense, isMo
         <Card className="fade-up delay-2">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
             <h2 style={{ fontWeight: 800, fontSize: 17, color: T.dark }}>Recent Expenses</h2>
-            <Btn variant="ghost" size="sm" onClick={() => setScreen('expenses')} style={{ color: T.mint, fontWeight: 700 }}>
+            <Btn variant="ghost" size="sm" onClick={() => navigate('/dashboard/expenses')} style={{ color: T.mint, fontWeight: 700 }}>
               See all <Icon name="chevronR" size={14} color={T.mint} />
             </Btn>
           </div>
@@ -457,7 +467,7 @@ const DashboardScreen = ({ expenses, categories, setScreen, setEditExpense, isMo
                     key={exp.id}
                     className="fade-up"
                     style={{ animationDelay: `${0.25 + i * 0.06}s`, display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', borderBottom: i < recent.length - 1 ? `1px solid ${T.light}` : 'none', cursor: 'pointer' }}
-                    onClick={() => { setEditExpense(exp); setScreen('add-expense'); }}
+                    onClick={() => { navigate(`/dashboard/edit-expense/${exp.id}`); }}
                   >
                     <div style={{ width: 40, height: 40, borderRadius: 12, background: (cat?.color || T.mint) + '20', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <Icon name="tag" size={18} color={cat?.color || T.mint} />
@@ -523,7 +533,8 @@ const DashboardScreen = ({ expenses, categories, setScreen, setEditExpense, isMo
 
 const PALETTE = [T.mint, T.teal, T.yellow, '#FF8FAB', '#A78BFA', '#F97316', '#06B6D4', '#84CC16'];
 
-const CategoriesScreen = ({ categories, setCategories, expenses, showToast, isMobile }) => {
+export const CategoriesScreen = () => {
+  const { categories, setCategories, expenses, showToast, isMobile } = useOutletContext();
   const [newTitle, setNewTitle] = useState('');
   const [newColor, setNewColor] = useState(PALETTE[0]);
   const [editId, setEditId] = useState(null);
@@ -649,7 +660,13 @@ const CategoriesScreen = ({ categories, setCategories, expenses, showToast, isMo
 };
 
 const TopBar = ({ screen, onLogout }) => {
-  const labels = { dashboard: 'Dashboard', expenses: 'Expenses', 'add-expense': 'Add Expense', categories: 'Categories' };
+  const getTitle = (path) => {
+    if (path === '/dashboard' || path === '/dashboard/') return 'Dashboard';
+    if (path.includes('/expenses')) return 'Expenses';
+    if (path.includes('/categories')) return 'Categories';
+    if (path.includes('/add-expense') || path.includes('/edit-expense')) return 'Add Expense';
+    return 'Dashboard';
+  };
   return (
     <div style={{
       position: 'sticky', top: 0, zIndex: 50, background: T.white, borderBottom: `1px solid ${T.light}`,
@@ -658,7 +675,7 @@ const TopBar = ({ screen, onLogout }) => {
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <Logo size={28} />
-        <span style={{ fontWeight: 800, fontSize: 16, color: T.dark }}>{labels[screen] || 'myBank'}</span>
+        <span style={{ fontWeight: 800, fontSize: 16, color: T.dark }}>{getTitle(screen)}</span>
       </div>
       <button onClick={onLogout} style={{ background: T.light, border: 'none', borderRadius: 10, padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, color: T.gray, fontWeight: 600, fontSize: 12, fontFamily: 'Montserrat' }}>
         <Icon name="logout" size={14} color={T.gray} /> Logout
@@ -668,14 +685,14 @@ const TopBar = ({ screen, onLogout }) => {
 };
 
 export default function Dashboard({ onLogout }) {
-  const [screen, setScreen] = useState('dashboard');
   const [expenses, setExpenses] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [editExpense, setEditExpense] = useState(null);
   const [toast, setToast] = useState(null);
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
   const toastTimer = useRef(null);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadData = async () => {
@@ -747,7 +764,7 @@ export default function Dashboard({ onLogout }) {
       );
 
       showToast(isEdit ? 'Expense updated!' : 'Expense added!', 'success');
-      setScreen('expenses');
+      navigate('/dashboard/expenses');
     } catch {
       showToast("Failed to save expense", "error");
     }
@@ -780,35 +797,10 @@ export default function Dashboard({ onLogout }) {
     toastTimer.current = setTimeout(() => setToast(null), 3000);
   };
 
-  const handleNavTo = (s) => { if (s !== 'add-expense') setEditExpense(null); setScreen(s); };
-
-  const renderScreen = () => {
-    switch (screen) {
-      case 'dashboard': return <DashboardScreen expenses={expenses} categories={categories} setScreen={handleNavTo} setEditExpense={setEditExpense} isMobile={isMobile} />;
-      case 'expenses':
-        return (
-          <Expenses
-            expenses={expenses}
-            categories={categories}
-            onAddExpense={() => { setEditExpense(null); setScreen('add-expense'); }}
-            onEditExpense={(exp) => { setEditExpense(exp); setScreen('add-expense'); }}
-            onDeleteExpense={setDeleteTarget}
-            isMobile={isMobile}
-          />
-        );
-      case 'add-expense':
-        return (
-          <ExpenseForm
-            expense={editExpense}
-            categories={categories}
-            isMobile={isMobile}
-            onCancel={() => setScreen('expenses')}
-            onSave={handleSaveExpense}
-          />
-        );
-      case 'categories': return <CategoriesScreen categories={categories} setCategories={setCategories} expenses={expenses} showToast={showToast} isMobile={isMobile} />;
-      default: return null;
-    }
+  const getEditExpense = () => {
+    if (!location.pathname.includes('/edit-expense/')) return null;
+    const id = parseInt(location.pathname.split('/').pop());
+    return expenses.find(e => e.id === id);
   };
 
   if (loading) {
@@ -823,22 +815,45 @@ export default function Dashboard({ onLogout }) {
     );
   }
 
+  const contextValue = {
+    expenses,
+    setExpenses,
+    categories,
+    setCategories,
+    handleSaveExpense,
+    handleDeleteExpense,
+    handleDeleteCategory,
+    showToast,
+    isMobile,
+    setDeleteTarget
+  };
+
   return (
     <>
       <style>{globalStyle}</style>
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-      {deleteTarget && <DeleteModal label={deleteTarget.label || deleteTarget.title} onConfirm={() => (deleteTarget.label ? handleDeleteExpense(deleteTarget) : handleDeleteCategory(deleteTarget))} onCancel={() => setDeleteTarget(null)} />}
+      {deleteTarget && (
+        <DeleteModal 
+          label={deleteTarget.label || deleteTarget.title} 
+          onConfirm={() => deleteTarget.categoryId ? handleDeleteExpense(deleteTarget) : handleDeleteCategory(deleteTarget)} 
+          onCancel={() => setDeleteTarget(null)} 
+        />
+      )}
 
       {isMobile ? (
         <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: T.offwhite }}>
-          <TopBar screen={screen} onLogout={onLogout} />
-          <main style={{ flex: 1 }}>{renderScreen()}</main>
-          <MobileNav screen={screen} setScreen={handleNavTo} />
+          <TopBar screen={location.pathname} onLogout={onLogout} />
+          <main style={{ flex: 1 }}>
+            <Outlet context={contextValue} />
+          </main>
+          <MobileNav />
         </div>
       ) : (
         <div style={{ display: 'flex', minHeight: '100vh', background: T.offwhite }}>
-          <Sidebar screen={screen} setScreen={handleNavTo} onLogout={onLogout} />
-          <main style={{ flex: 1, overflowY: 'auto', minHeight: '100vh' }}>{renderScreen()}</main>
+          <Sidebar onLogout={onLogout} />
+          <main style={{ flex: 1, overflowY: 'auto', minHeight: '100vh' }}>
+            <Outlet context={contextValue} />
+          </main>
         </div>
       )}
     </>

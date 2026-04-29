@@ -29,8 +29,10 @@ FROM nginx:alpine
 # ↑ Nouvelle image propre : juste un serveur web Nginx, sans Node.js 
 # ↑ L'image finale sera beaucoup plus légère (~20 Mo au lieu de ~400 Mo) 
 
-COPY --from=builder /app/dist /usr/share/nginx/html 
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf 
 # ↑ On copie UNIQUEMENT le résultat du build, pas node_modules ni le code source
+
 
 EXPOSE 80 
 

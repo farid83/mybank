@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { api } from '../../services/api'
+import { useNavigate, Link } from 'react-router-dom'
 
 // ─── THEME ────────────────────────────────────────────────────────────────────
 const T = {
@@ -159,12 +160,13 @@ const Icon = ({ name, size = 20, color = "currentColor", strokeWidth = 2 }) => (
 );
 
 // ─── LOGIN SCREEN ────────────────────────────────────────────────────────────
-export default function Login({ onLogin, onSwitchToRegister }) {
+export default function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async () => {
     if (!email || !password) { setError("Please fill in all fields."); return; }
@@ -173,6 +175,7 @@ export default function Login({ onLogin, onSwitchToRegister }) {
       await api.login(email, password);
       setLoading(false);
       onLogin();
+      navigate('/dashboard');
     } catch (err) {
       setLoading(false);
       setError(err.message || "Invalid credentials.");
@@ -276,7 +279,7 @@ export default function Login({ onLogin, onSwitchToRegister }) {
             </div>
 
             <p style={{ textAlign: "center", marginTop: 28, color: T.gray, fontSize: 13 }}>
-              Don't have an account? <span onClick={onSwitchToRegister} style={{ color: T.mint, fontWeight: 700, cursor: "pointer" }}>Sign up</span>
+              Don't have an account? <Link to="/register" style={{ color: T.mint, fontWeight: 700, cursor: "pointer", textDecoration: 'none' }}>Sign up</Link>
             </p>
           </div>
         </div>

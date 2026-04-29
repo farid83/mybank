@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { api } from '../../services/api'
+import { useNavigate, Link } from 'react-router-dom'
 
 // ─── THEME ────────────────────────────────────────────────────────────────────
 const T = {
@@ -160,7 +161,7 @@ const Icon = ({ name, size = 20, color = "currentColor", strokeWidth = 2 }) => (
 );
 
 // ─── REGISTER SCREEN ─────────────────────────────────────────────────────────
-export default function Register({ onRegister, onSwitchToLogin }) {
+export default function Register({ onRegister }) {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -168,6 +169,7 @@ export default function Register({ onRegister, onSwitchToLogin }) {
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
@@ -191,6 +193,7 @@ export default function Register({ onRegister, onSwitchToLogin }) {
       await api.register(fullName, email, password);
       setLoading(false);
       onRegister({ fullName, email });
+      navigate('/dashboard');
     } catch (err) {
       setLoading(false);
       setError(err.message || "An error occurred during registration.");
@@ -329,12 +332,12 @@ export default function Register({ onRegister, onSwitchToLogin }) {
 
             <p style={{ textAlign: "center", marginTop: 32, color: T.gray, fontSize: 14, fontWeight: 500 }}>
               Already have an account?{" "}
-              <button 
-                onClick={onSwitchToLogin} 
-                style={{ background: "none", border: "none", padding: 0, color: T.mint, fontWeight: 800, cursor: "pointer", fontSize: 14 }}
+              <Link
+                to="/login"
+                style={{ background: "none", border: "none", padding: 0, color: T.mint, fontWeight: 800, cursor: "pointer", fontSize: 14, textDecoration: 'none' }}
               >
                 Sign in
-              </button>
+              </Link>
             </p>
           </div>
         </div>

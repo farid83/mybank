@@ -1,14 +1,16 @@
 import { useState } from 'react';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { Card, Btn, Input, Badge, Icon, Empty } from '../Dashboard/Dashboard'; // Reusing base components
 import { T, fmt, fmtDate } from '../Dashboard/theme';
-export default function Expenses({
-  expenses,
-  categories,
-  onAddExpense,
-  onEditExpense,
-  onDeleteExpense,
-  isMobile
-}) {
+
+export default function Expenses() {
+  const {
+    expenses,
+    categories,
+    isMobile,
+    setDeleteTarget
+  } = useOutletContext();
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [filterCat, setFilterCat] = useState('');
   const [sortBy, setSortBy] = useState('date-desc');
@@ -40,7 +42,7 @@ export default function Expenses({
           </p>
           <h1 style={{ fontWeight: 900, fontSize: isMobile ? 24 : 32, color: T.dark, letterSpacing: '-0.02em' }}>Expenses</h1>
         </div>
-        <Btn variant="primary" onClick={onAddExpense}>
+        <Btn variant="primary" onClick={() => navigate('/dashboard/add-expense')}>
           <Icon name="plus" size={16} color={T.dark} /> Add Expense
         </Btn>
       </div>
@@ -129,10 +131,10 @@ export default function Expenses({
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
                         {cat ? <Badge color={cat.color} label={cat.title} /> : <span />}
                         <div style={{ display: 'flex', gap: 8 }}>
-                          <button onClick={() => onEditExpense(exp)} style={{ background: T.teal + '15', border: 'none', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', color: T.teal, transition: '0.2s' }}>
+                          <button onClick={() => navigate(`/dashboard/edit-expense/${exp.id}`)} style={{ background: T.teal + '15', border: 'none', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', color: T.teal, transition: '0.2s' }}>
                             <Icon name="edit" size={14} color={T.teal} />
                           </button>
-                          <button onClick={() => onDeleteExpense(exp)} style={{ background: T.danger + '15', border: 'none', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', color: T.danger }}>
+                          <button onClick={() => setDeleteTarget(exp)} style={{ background: T.danger + '15', border: 'none', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', color: T.danger }}>
                             <Icon name="trash" size={14} color={T.danger} />
                           </button>
                         </div>
@@ -146,7 +148,7 @@ export default function Expenses({
                       <div style={{ alignSelf: 'center' }}>{cat ? <Badge color={cat.color} label={cat.title} /> : '—'}</div>
                       <div style={{ display: 'flex', gap: 8, alignSelf: 'center', justifyContent: 'flex-end' }}>
                         <button
-                          onClick={() => onEditExpense(exp)}
+                          onClick={() => navigate(`/dashboard/edit-expense/${exp.id}`)}
                           title="Edit"
                           style={{ background: T.teal + '12', border: 'none', borderRadius: 10, padding: '8px', cursor: 'pointer', transition: 'all 0.2s' }}
                           onMouseEnter={e => e.currentTarget.style.background = T.teal + '20'}
@@ -155,7 +157,7 @@ export default function Expenses({
                           <Icon name="edit" size={16} color={T.teal} />
                         </button>
                         <button
-                          onClick={() => onDeleteExpense(exp)}
+                          onClick={() => setDeleteTarget(exp)}
                           title="Delete"
                           style={{ background: T.danger + '12', border: 'none', borderRadius: 10, padding: '8px', cursor: 'pointer', transition: 'all 0.2s' }}
                           onMouseEnter={e => e.currentTarget.style.background = T.danger + '20'}

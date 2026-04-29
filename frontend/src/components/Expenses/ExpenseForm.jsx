@@ -1,21 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import { Card, Btn, Input } from '../Dashboard/Dashboard';
 import { T } from '../Dashboard/theme';
 
-export default function ExpenseForm({
-  expense,
-  categories,
-  onSave,
-  onCancel,
-  isMobile
-}) {
+export default function ExpenseForm() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const {
+    expenses,
+    categories,
+    handleSaveExpense,
+    isMobile
+  } = useOutletContext();
+
+  const expense = id ? expenses.find(e => e.id === parseInt(id)) : null;
   const isEdit = !!expense;
-  const [label, setLabel] = useState(expense?.label || '');
-  const [amount, setAmount] = useState(expense?.amount || '');
-  const [date, setDate] = useState(expense?.date || new Date().toISOString().split('T')[0]);
-  const [catId, setCatId] = useState(expense?.categoryId || '');
+
+  const [label, setLabel] = useState('');
+  const [amount, setAmount] = useState('');
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [catId, setCatId] = useState('');
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (expense) {
+      setLabel(expense.label);
+      setAmount(expense.amount);
+      setDate(expense.date);
+      setCatId(expense.categoryId);
+    }
+  }, [expense]);
 
   const validate = () => {
     const e = {};
@@ -31,7 +46,7 @@ export default function ExpenseForm({
     if (!validate()) return;
     setSaving(true);
     try {
-      await onSave({
+      await handleSaveExpense({
         ...expense,
         label: label.trim(),
         amount: parseFloat(amount),
@@ -48,7 +63,7 @@ export default function ExpenseForm({
   return (
     <div className="fade-in" style={{ padding: isMobile ? '20px 16px 90px' : '32px 36px', maxWidth: 600, margin: '0 auto' }}>
       <button
-        onClick={onCancel}
+        onClick={() => navigate('/dashboard/expenses')}
         style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.gray, display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, marginBottom: 20, padding: 0 }}
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7" /></svg>
@@ -87,7 +102,7 @@ export default function ExpenseForm({
           </div>
 
           <div style={{ display: 'flex', gap: 12, paddingTop: 4 }}>
-            <Btn variant="outline" onClick={onCancel} style={{ flex: 1 }}>Cancel</Btn>
+            <Btn variant="outline" onClick={() => navigate('/dashboard/expenses')} style={{ flex: 1 }}>Cancel</Btn>
             <Btn variant="primary" onClick={handleSave} disabled={saving} style={{ flex: 2 }}>
               {saving ? (
                 <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
