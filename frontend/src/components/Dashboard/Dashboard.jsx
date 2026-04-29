@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useLocation, Outlet, useOutletContext } from 'react-router-dom';
 import { api } from '../../services/api';
 import Expenses from '../Expenses/Expenses';
@@ -734,6 +734,12 @@ export default function Dashboard({ onLogout }) {
 
   const [deleteTarget, setDeleteTarget] = useState(null);
 
+  const editExpense = useMemo(() => {
+    if (!location.pathname.includes('/edit-expense/')) return null;
+    const id = parseInt(location.pathname.split('/').pop());
+    return expenses.find(e => e.id === id);
+  }, [location.pathname, expenses]);
+
   const handleSaveExpense = async (data) => {
     try {
       const isEdit = !!editExpense;
@@ -797,11 +803,7 @@ export default function Dashboard({ onLogout }) {
     toastTimer.current = setTimeout(() => setToast(null), 3000);
   };
 
-  const getEditExpense = () => {
-    if (!location.pathname.includes('/edit-expense/')) return null;
-    const id = parseInt(location.pathname.split('/').pop());
-    return expenses.find(e => e.id === id);
-  };
+
 
   if (loading) {
     return (
