@@ -24,6 +24,11 @@ class Category
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Operation::class)]
     private Collection $operations;
 
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['category:read'])]
+    private ?User $user = null;
+
     public function __construct()
     {
         $this->operations = new ArrayCollection();
@@ -72,6 +77,18 @@ class Category
                 $operation->setCategory(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

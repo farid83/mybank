@@ -18,7 +18,9 @@ class CategoryController extends AbstractController
     #[Route('', methods: ['GET'])]
     public function index(CategoryRepository $categoryRepository): JsonResponse
     {
-        $categories = $categoryRepository->findAll();
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        $categories = $categoryRepository->findByGlobalOrUser($user);
 
         return $this->json($categories, context: ['groups' => 'category:read']);
     }
@@ -30,6 +32,12 @@ class CategoryController extends AbstractController
     ): JsonResponse {
         $category = new Category();
         $category->setTitle($dto->title);
+
+        // Si l'utilisateur n'est pas admin, on lie la catégorie à son compte (privée)
+        // Si c'est un admin, l'user reste null (catégorie globale)
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            $category->setUser($this->getUser());
+        }
 
         $entityManager->persist($category);
         $entityManager->flush();
