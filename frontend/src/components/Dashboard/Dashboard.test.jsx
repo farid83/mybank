@@ -1,6 +1,9 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import Dashboard from './Dashboard';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import Dashboard, { DashboardScreen, CategoriesScreen } from './Dashboard';
+import Expenses from '../Expenses/Expenses';
+import ExpenseForm from '../Expenses/ExpenseForm';
 import { api } from '../../services/api';
 import operationsFixture from '../../test/fixtures/operations.json';
 import categoriesFixture from '../../test/fixtures/categories.json';
@@ -20,6 +23,22 @@ vi.mock('../../services/api', () => ({
 describe('Dashboard Component', () => {
   const mockOnLogout = vi.fn();
 
+  const renderDashboard = () => {
+    return render(
+      <MemoryRouter initialEntries={['/dashboard']}>
+        <Routes>
+          <Route path="/dashboard" element={<Dashboard onLogout={mockOnLogout} />}>
+            <Route index element={<DashboardScreen />} />
+            <Route path="expenses" element={<Expenses />} />
+            <Route path="categories" element={<CategoriesScreen />} />
+            <Route path="add-expense" element={<ExpenseForm />} />
+            <Route path="edit-expense/:id" element={<ExpenseForm />} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    );
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
     api.getOperations.mockResolvedValue(operationsFixture);
@@ -28,7 +47,7 @@ describe('Dashboard Component', () => {
   });
 
   it('renders the dashboard with summary cards', async () => {
-    render(<Dashboard onLogout={mockOnLogout} />);
+    renderDashboard();
 
     // Wait for loading to finish
     await waitFor(() => {
@@ -42,7 +61,7 @@ describe('Dashboard Component', () => {
   });
 
   it('displays the list of recent expenses', async () => {
-    render(<Dashboard onLogout={mockOnLogout} />);
+    renderDashboard();
 
     await waitFor(() => {
       expect(screen.getByText('Recent Expenses')).toBeInTheDocument();
@@ -54,7 +73,7 @@ describe('Dashboard Component', () => {
   });
 
   it('switches to the full expenses screen', async () => {
-    render(<Dashboard onLogout={mockOnLogout} />);
+    renderDashboard();
 
     await waitFor(() => screen.getByText('Recent Expenses'));
 
@@ -66,7 +85,7 @@ describe('Dashboard Component', () => {
   });
 
   it('opens the add expense screen', async () => {
-    render(<Dashboard onLogout={mockOnLogout} />);
+    renderDashboard();
 
     await waitFor(() => screen.getByText('Recent Expenses'));
 
@@ -81,7 +100,7 @@ describe('Dashboard Component', () => {
   });
 
   it('can logout from the top bar', async () => {
-    render(<Dashboard onLogout={mockOnLogout} />);
+    renderDashboard();
 
     await waitFor(() => screen.getByText('Good morning 🌤️'));
 

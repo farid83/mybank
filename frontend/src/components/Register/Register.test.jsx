@@ -1,7 +1,29 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
 import Register from './Register';
 import { api } from '../../services/api';
+
+const mockOnSwitchToLogin = vi.fn();
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    Link: ({ children, to, ...props }) => (
+      <button
+        onClick={() => {
+          if (to === '/login') {
+            mockOnSwitchToLogin();
+          }
+        }}
+        {...props}
+      >
+        {children}
+      </button>
+    ),
+  };
+});
 
 vi.mock('../../services/api', () => ({
   api: {
@@ -11,7 +33,6 @@ vi.mock('../../services/api', () => ({
 
 describe('Register Component', () => {
   const mockOnRegister = vi.fn();
-  const mockOnSwitchToLogin = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -19,7 +40,11 @@ describe('Register Component', () => {
   });
 
   it('renders the register form with all required elements', () => {
-    render(<Register onRegister={mockOnRegister} onSwitchToLogin={mockOnSwitchToLogin} />);
+    render(
+      <MemoryRouter>
+        <Register onRegister={mockOnRegister} onSwitchToLogin={mockOnSwitchToLogin} />
+      </MemoryRouter>
+    );
 
     expect(screen.getByRole('heading', { name: 'Create Account' })).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/John Doe/i)).toBeInTheDocument();
@@ -31,7 +56,11 @@ describe('Register Component', () => {
   });
 
   it('displays branding and feature highlights', () => {
-    render(<Register onRegister={mockOnRegister} onSwitchToLogin={mockOnSwitchToLogin} />);
+    render(
+      <MemoryRouter>
+        <Register onRegister={mockOnRegister} onSwitchToLogin={mockOnSwitchToLogin} />
+      </MemoryRouter>
+    );
 
     expect(screen.getByText('Join myBank')).toBeInTheDocument();
     expect(screen.getByText('No hidden fees')).toBeInTheDocument();
@@ -40,7 +69,11 @@ describe('Register Component', () => {
   });
 
   it('shows error message when submitting empty form', async () => {
-    render(<Register onRegister={mockOnRegister} onSwitchToLogin={mockOnSwitchToLogin} />);
+    render(
+      <MemoryRouter>
+        <Register onRegister={mockOnRegister} onSwitchToLogin={mockOnSwitchToLogin} />
+      </MemoryRouter>
+    );
 
     const submitButton = screen.getByRole('button', { name: 'Create Account' });
     fireEvent.click(submitButton);
@@ -50,7 +83,11 @@ describe('Register Component', () => {
   });
 
   it('shows error message when passwords do not match', async () => {
-    render(<Register onRegister={mockOnRegister} onSwitchToLogin={mockOnSwitchToLogin} />);
+    render(
+      <MemoryRouter>
+        <Register onRegister={mockOnRegister} onSwitchToLogin={mockOnSwitchToLogin} />
+      </MemoryRouter>
+    );
 
     fireEvent.change(screen.getByPlaceholderText(/John Doe/i), { target: { value: 'John Smith' } });
     fireEvent.change(screen.getByPlaceholderText(/john@example\.com/i), { target: { value: 'john@smith.com' } });
@@ -67,7 +104,11 @@ describe('Register Component', () => {
   });
 
   it('shows error message for short password', async () => {
-    render(<Register onRegister={mockOnRegister} onSwitchToLogin={mockOnSwitchToLogin} />);
+    render(
+      <MemoryRouter>
+        <Register onRegister={mockOnRegister} onSwitchToLogin={mockOnSwitchToLogin} />
+      </MemoryRouter>
+    );
 
     fireEvent.change(screen.getByPlaceholderText(/John Doe/i), { target: { value: 'John Smith' } });
     fireEvent.change(screen.getByPlaceholderText(/john@example\.com/i), { target: { value: 'john@smith.com' } });
@@ -84,7 +125,11 @@ describe('Register Component', () => {
   });
 
   it('calls onSwitchToLogin when sign in button is clicked', () => {
-    render(<Register onRegister={mockOnRegister} onSwitchToLogin={mockOnSwitchToLogin} />);
+    render(
+      <MemoryRouter>
+        <Register onRegister={mockOnRegister} onSwitchToLogin={mockOnSwitchToLogin} />
+      </MemoryRouter>
+    );
 
     const signInButton = screen.getByRole('button', { name: /sign in/i });
     fireEvent.click(signInButton);
@@ -93,7 +138,11 @@ describe('Register Component', () => {
   });
 
   it('toggles password visibility', () => {
-    render(<Register onRegister={mockOnRegister} onSwitchToLogin={mockOnSwitchToLogin} />);
+    render(
+      <MemoryRouter>
+        <Register onRegister={mockOnRegister} onSwitchToLogin={mockOnSwitchToLogin} />
+      </MemoryRouter>
+    );
 
     const passwordInputs = screen.getAllByPlaceholderText(/••••••••/i);
     const toggleButton = screen.getByText(/show passwords/i);
@@ -116,7 +165,11 @@ describe('Register Component', () => {
   });
 
   it('shows loading state and calls onRegister with valid data', async () => {
-    render(<Register onRegister={mockOnRegister} onSwitchToLogin={mockOnSwitchToLogin} />);
+    render(
+      <MemoryRouter>
+        <Register onRegister={mockOnRegister} onSwitchToLogin={mockOnSwitchToLogin} />
+      </MemoryRouter>
+    );
 
     fireEvent.change(screen.getByPlaceholderText(/John Doe/i), { target: { value: 'Jane Doe' } });
     fireEvent.change(screen.getByPlaceholderText(/john@example\.com/i), { target: { value: 'jane@example.com' } });
@@ -142,7 +195,11 @@ describe('Register Component', () => {
   });
 
   it('clears error message when input is corrected and resubmitted', async () => {
-    render(<Register onRegister={mockOnRegister} onSwitchToLogin={mockOnSwitchToLogin} />);
+    render(
+      <MemoryRouter>
+        <Register onRegister={mockOnRegister} onSwitchToLogin={mockOnSwitchToLogin} />
+      </MemoryRouter>
+    );
 
     const submitButton = screen.getByRole('button', { name: 'Create Account' });
     fireEvent.click(submitButton);

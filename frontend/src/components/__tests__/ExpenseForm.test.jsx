@@ -1,6 +1,16 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import * as router from 'react-router-dom';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import ExpenseForm from '../Expenses/ExpenseForm';
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useOutletContext: vi.fn(),
+  };
+});
 
 describe('ExpenseForm Component', () => {
   const categories = [
@@ -13,15 +23,28 @@ describe('ExpenseForm Component', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+
+    vi.spyOn(router, 'useOutletContext').mockReturnValue({
+      expenses: [
+        { id: 123, label: 'Dinner', amount: 45.5, date: '2025-04-26', categoryId: 1 }
+      ],
+      categories,
+      handleSaveExpense: mockOnSave,
+      isMobile: false,
+    });
+
+    vi.spyOn(router, 'useNavigate').mockReturnValue(mockOnCancel);
   });
 
   it('renders correctly in add mode', () => {
     render(
-      <ExpenseForm
-        categories={categories}
-        onSave={mockOnSave}
-        onCancel={mockOnCancel}
-      />
+      <MemoryRouter>
+        <ExpenseForm
+          categories={categories}
+          onSave={mockOnSave}
+          onCancel={mockOnCancel}
+        />
+      </MemoryRouter>
     );
 
     expect(screen.getByRole('heading', { name: /Add Expense/i })).toBeInTheDocument();
@@ -42,12 +65,11 @@ describe('ExpenseForm Component', () => {
     };
 
     render(
-      <ExpenseForm
-        expense={expense}
-        categories={categories}
-        onSave={mockOnSave}
-        onCancel={mockOnCancel}
-      />
+      <MemoryRouter initialEntries={['/edit-expense/123']}>
+        <Routes>
+          <Route path="/edit-expense/:id" element={<ExpenseForm />} />
+        </Routes>
+      </MemoryRouter>
     );
 
     expect(screen.getByText('Edit Expense')).toBeInTheDocument();
@@ -59,11 +81,13 @@ describe('ExpenseForm Component', () => {
 
   it('shows validation errors when fields are empty', async () => {
     render(
-      <ExpenseForm
-        categories={categories}
-        onSave={mockOnSave}
-        onCancel={mockOnCancel}
-      />
+      <MemoryRouter>
+        <ExpenseForm
+          categories={categories}
+          onSave={mockOnSave}
+          onCancel={mockOnCancel}
+        />
+      </MemoryRouter>
     );
 
     const submitBtn = screen.getByRole('button', { name: 'Add Expense' });
@@ -77,11 +101,13 @@ describe('ExpenseForm Component', () => {
 
   it('calls onSave with valid data', async () => {
     render(
-      <ExpenseForm
-        categories={categories}
-        onSave={mockOnSave}
-        onCancel={mockOnCancel}
-      />
+      <MemoryRouter>
+        <ExpenseForm
+          categories={categories}
+          onSave={mockOnSave}
+          onCancel={mockOnCancel}
+        />
+      </MemoryRouter>
     );
 
     fireEvent.change(screen.getByPlaceholderText('e.g. Lunch at Café'), { target: { value: 'New Shoes' } });
@@ -96,11 +122,13 @@ describe('ExpenseForm Component', () => {
 
   it('calls onCancel when cancel button is clicked', () => {
     render(
-      <ExpenseForm
-        categories={categories}
-        onSave={mockOnSave}
-        onCancel={mockOnCancel}
-      />
+      <MemoryRouter>
+        <ExpenseForm
+          categories={categories}
+          onSave={mockOnSave}
+          onCancel={mockOnCancel}
+        />
+      </MemoryRouter>
     );
 
     fireEvent.click(screen.getByText('Cancel'));
@@ -109,11 +137,13 @@ describe('ExpenseForm Component', () => {
 
   it('shows category preview when selected', () => {
     render(
-      <ExpenseForm
-        categories={categories}
-        onSave={mockOnSave}
-        onCancel={mockOnCancel}
-      />
+      <MemoryRouter>
+        <ExpenseForm
+          categories={categories}
+          onSave={mockOnSave}
+          onCancel={mockOnCancel}
+        />
+      </MemoryRouter>
     );
 
     fireEvent.change(screen.getByDisplayValue(/— Select —/i), { target: { value: '1' } });

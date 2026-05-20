@@ -1,5 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
 import Login from './Login';
 import { api } from '../../services/api';
 
@@ -20,7 +21,11 @@ describe('Login Component', () => {
 
   it('renders the login form with all required elements', () => {
     // ACT
-    render(<Login onLogin={mockOnLogin} />);
+    render(
+      <MemoryRouter>
+        <Login onLogin={mockOnLogin} />
+      </MemoryRouter>
+    );
 
     // ASSERT
     expect(screen.getByText('Welcome back 👋')).toBeInTheDocument();
@@ -34,7 +39,11 @@ describe('Login Component', () => {
 
   it('displays the logo and branding correctly', () => {
     // ACT
-    render(<Login onLogin={mockOnLogin} />);
+    render(
+      <MemoryRouter>
+        <Login onLogin={mockOnLogin} />
+      </MemoryRouter>
+    );
 
     // ASSERT
     expect(screen.getByText('myBank')).toBeInTheDocument();
@@ -46,7 +55,11 @@ describe('Login Component', () => {
 
   it('shows error message when submitting empty form', async () => {
     // ACT
-    render(<Login onLogin={mockOnLogin} />);
+    render(
+      <MemoryRouter>
+        <Login onLogin={mockOnLogin} />
+      </MemoryRouter>
+    );
 
     const signInButton = screen.getByRole('button', { name: /sign in/i });
     fireEvent.click(signInButton);
@@ -60,7 +73,11 @@ describe('Login Component', () => {
 
   it('shows error message when submitting with only email', async () => {
     // ACT
-    render(<Login onLogin={mockOnLogin} />);
+    render(
+      <MemoryRouter>
+        <Login onLogin={mockOnLogin} />
+      </MemoryRouter>
+    );
 
     const emailInput = screen.getByPlaceholderText(/you@example\.com/i);
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
@@ -77,7 +94,11 @@ describe('Login Component', () => {
 
   it('shows error message when submitting with only password', async () => {
     // ACT
-    render(<Login onLogin={mockOnLogin} />);
+    render(
+      <MemoryRouter>
+        <Login onLogin={mockOnLogin} />
+      </MemoryRouter>
+    );
 
     const passwordInput = screen.getByPlaceholderText(/••••••••/i);
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
@@ -94,7 +115,11 @@ describe('Login Component', () => {
 
   it('calls onLogin when form is submitted with valid data', async () => {
     // ACT
-    render(<Login onLogin={mockOnLogin} />);
+    render(
+      <MemoryRouter>
+        <Login onLogin={mockOnLogin} />
+      </MemoryRouter>
+    );
 
     const emailInput = screen.getByPlaceholderText(/you@example\.com/i);
     const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -113,7 +138,11 @@ describe('Login Component', () => {
 
   it('shows loading state during login process', async () => {
     // ACT
-    render(<Login onLogin={mockOnLogin} />);
+    render(
+      <MemoryRouter>
+        <Login onLogin={mockOnLogin} />
+      </MemoryRouter>
+    );
 
     const emailInput = screen.getByPlaceholderText(/you@example\.com/i);
     const passwordInput = screen.getByPlaceholderText(/••••••••/i);
@@ -134,7 +163,11 @@ describe('Login Component', () => {
 
   it('toggles password visibility', () => {
     // ACT
-    render(<Login onLogin={mockOnLogin} />);
+    render(
+      <MemoryRouter>
+        <Login onLogin={mockOnLogin} />
+      </MemoryRouter>
+    );
 
     const passwordInput = screen.getByPlaceholderText(/••••••••/i);
     const toggleButton = passwordInput.parentElement.querySelector('button');
@@ -153,7 +186,11 @@ describe('Login Component', () => {
 
   it('clears error message on successful login', () => {
     // ACT
-    render(<Login onLogin={mockOnLogin} />);
+    render(
+      <MemoryRouter>
+        <Login onLogin={mockOnLogin} />
+      </MemoryRouter>
+    );
 
     const signInButton = screen.getByRole('button', { name: /sign in/i });
     fireEvent.click(signInButton);
@@ -175,10 +212,14 @@ describe('Login Component', () => {
 
   it('displays demo hint', () => {
     // ACT
-    render(<Login onLogin={mockOnLogin} />);
+    render(
+      <MemoryRouter>
+        <Login onLogin={mockOnLogin} />
+      </MemoryRouter>
+    );
 
     // ASSERT
     expect(screen.getByText(/Demo:/)).toBeInTheDocument();
     expect(screen.getByText('Enter any email & password to log in.')).toBeInTheDocument();
   });
-});
+}); 

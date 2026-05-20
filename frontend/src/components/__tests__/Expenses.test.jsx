@@ -1,6 +1,16 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import * as router from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import Expenses from '../Expenses/Expenses';
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useOutletContext: vi.fn(),
+  };
+});
 
 describe('Expenses Component', () => {
   const categories = [
@@ -22,17 +32,36 @@ describe('Expenses Component', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+
+    vi.spyOn(router, 'useOutletContext').mockReturnValue({
+      expenses,
+      categories,
+      isMobile: false,
+      setDeleteTarget: mockOnDelete,
+    });
+
+    vi.spyOn(router, 'useNavigate').mockReturnValue(vi.fn((path) => {
+      if (path === '/dashboard/add-expense') {
+        mockOnAdd();
+      } else if (path.startsWith('/dashboard/edit-expense/')) {
+        const id = parseInt(path.split('/').pop());
+        const exp = expenses.find(e => e.id === id);
+        mockOnEdit(exp);
+      }
+    }));
   });
 
   it('renders correctly with list of expenses', () => {
     render(
-      <Expenses 
-        expenses={expenses} 
-        categories={categories} 
-        onAddExpense={mockOnAdd}
-        onEditExpense={mockOnEdit}
-        onDeleteExpense={mockOnDelete}
-      />
+      <MemoryRouter>
+        <Expenses 
+          expenses={expenses} 
+          categories={categories} 
+          onAddExpense={mockOnAdd}
+          onEditExpense={mockOnEdit}
+          onDeleteExpense={mockOnDelete}
+        />
+      </MemoryRouter>
     );
 
     expect(screen.getByText('Expenses')).toBeInTheDocument();
@@ -44,13 +73,15 @@ describe('Expenses Component', () => {
 
   it('filters expenses by search term', () => {
     render(
-      <Expenses 
-        expenses={expenses} 
-        categories={categories} 
-        onAddExpense={mockOnAdd}
-        onEditExpense={mockOnEdit}
-        onDeleteExpense={mockOnDelete}
-      />
+      <MemoryRouter>
+        <Expenses 
+          expenses={expenses} 
+          categories={categories} 
+          onAddExpense={mockOnAdd}
+          onEditExpense={mockOnEdit}
+          onDeleteExpense={mockOnDelete}
+        />
+      </MemoryRouter>
     );
 
     const searchInput = screen.getByPlaceholderText(/Search expenses/i);
@@ -63,13 +94,15 @@ describe('Expenses Component', () => {
 
   it('filters expenses by category', async () => {
     render(
-      <Expenses 
-        expenses={expenses} 
-        categories={categories} 
-        onAddExpense={mockOnAdd}
-        onEditExpense={mockOnEdit}
-        onDeleteExpense={mockOnDelete}
-      />
+      <MemoryRouter>
+        <Expenses 
+          expenses={expenses} 
+          categories={categories} 
+          onAddExpense={mockOnAdd}
+          onEditExpense={mockOnEdit}
+          onDeleteExpense={mockOnDelete}
+        />
+      </MemoryRouter>
     );
 
     const categorySelect = screen.getByDisplayValue(/All categories/i);
@@ -84,13 +117,15 @@ describe('Expenses Component', () => {
 
   it('sorts expenses by amount', () => {
     render(
-      <Expenses 
-        expenses={expenses} 
-        categories={categories} 
-        onAddExpense={mockOnAdd}
-        onEditExpense={mockOnEdit}
-        onDeleteExpense={mockOnDelete}
-      />
+      <MemoryRouter>
+        <Expenses 
+          expenses={expenses} 
+          categories={categories} 
+          onAddExpense={mockOnAdd}
+          onEditExpense={mockOnEdit}
+          onDeleteExpense={mockOnDelete}
+        />
+      </MemoryRouter>
     );
 
     const sortBySelect = screen.getByDisplayValue(/Newest First/i);
@@ -107,13 +142,15 @@ describe('Expenses Component', () => {
 
   it('calls onAddExpense when clicking Add button', () => {
     render(
-      <Expenses 
-        expenses={expenses} 
-        categories={categories} 
-        onAddExpense={mockOnAdd}
-        onEditExpense={mockOnEdit}
-        onDeleteExpense={mockOnDelete}
-      />
+      <MemoryRouter>
+        <Expenses 
+          expenses={expenses} 
+          categories={categories} 
+          onAddExpense={mockOnAdd}
+          onEditExpense={mockOnEdit}
+          onDeleteExpense={mockOnDelete}
+        />
+      </MemoryRouter>
     );
 
     fireEvent.click(screen.getByRole('button', { name: 'Add Expense' }));
@@ -122,13 +159,15 @@ describe('Expenses Component', () => {
 
   it('calls onEditExpense when clicking Edit button', () => {
     render(
-      <Expenses 
-        expenses={expenses} 
-        categories={categories} 
-        onAddExpense={mockOnAdd}
-        onEditExpense={mockOnEdit}
-        onDeleteExpense={mockOnDelete}
-      />
+      <MemoryRouter>
+        <Expenses 
+          expenses={expenses} 
+          categories={categories} 
+          onAddExpense={mockOnAdd}
+          onEditExpense={mockOnEdit}
+          onDeleteExpense={mockOnDelete}
+        />
+      </MemoryRouter>
     );
 
     // Get all edit buttons (using title)
@@ -140,13 +179,15 @@ describe('Expenses Component', () => {
 
   it('calls onDeleteExpense when clicking Delete button', () => {
     render(
-      <Expenses 
-        expenses={expenses} 
-        categories={categories} 
-        onAddExpense={mockOnAdd}
-        onEditExpense={mockOnEdit}
-        onDeleteExpense={mockOnDelete}
-      />
+      <MemoryRouter>
+        <Expenses 
+          expenses={expenses} 
+          categories={categories} 
+          onAddExpense={mockOnAdd}
+          onEditExpense={mockOnEdit}
+          onDeleteExpense={mockOnDelete}
+        />
+      </MemoryRouter>
     );
 
     // Get all delete buttons (using title)
@@ -158,13 +199,15 @@ describe('Expenses Component', () => {
 
   it('shows summary of totals', () => {
     render(
-      <Expenses 
-        expenses={expenses} 
-        categories={categories} 
-        onAddExpense={mockOnAdd}
-        onEditExpense={mockOnEdit}
-        onDeleteExpense={mockOnDelete}
-      />
+      <MemoryRouter>
+        <Expenses 
+          expenses={expenses} 
+          categories={categories} 
+          onAddExpense={mockOnAdd}
+          onEditExpense={mockOnEdit}
+          onDeleteExpense={mockOnDelete}
+        />
+      </MemoryRouter>
     );
 
     const totalAmount = expenses.reduce((sum, e) => sum + e.amount, 0);
